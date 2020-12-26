@@ -2,6 +2,15 @@
 #
 # Version: 20200912
 
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
 # Generic auto-generated build files
 *~
 *.a
@@ -34,6 +43,26 @@ Makefile
 Makefile.bcc
 Makefile.in
 stamp-h[1-9]
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Dd]ebugFTK/
+[Dd]ebugCheckm8/
+[Dd]ebugMacOs/
+[Rr]elease/
+[Rr]eleaseFTK/
+[Rr]eleaseCheckm8/
+[Rr]eleaseMacOs/
+[Rr]eleases/
+VSDebug/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Visual Studio 2015 cache/options directory
+.vs/
 
 # Specific auto-generated build files
 /ABOUT-NLS
@@ -111,20 +140,11 @@ stamp-h[1-9]
 /ylwrap
 
 # Project specific files
-/common/config.h
 /common/config.h.in
-/common/types.h
 /dpkg/changelog
-/include/libewf.h
-/include/libewf/definitions.h
-/include/libewf/features.h
-/include/libewf/types.h
 /libewf.pc
 /libewf.spec
-/libewf/libewf.rc
-/libewf/libewf_definitions.h
 /pyewf-python[23]/*.[ch]
-/ewf.net/ewf.net.rc
 /ewftools/*.exe
 /ewftools/ewfacquire
 /ewftools/ewfacquirestream
@@ -211,26 +231,3 @@ stamp-h[1-9]
 /tests/ewf_test_write_io_handle
 /tests/input
 /tests/tmp*
-
-# Local library dependencies specific files
-/libbfio
-/libcaes
-/libcdata
-/libcdatetime
-/libcerror
-/libcfile
-/libclocale
-/libcnotify
-/libcpath
-/libcsplit
-/libcthreads
-/libfcache
-/libfdata
-/libfdatetime
-/libfguid
-/libfvalue
-/libhmac
-/libodraw
-/libsmdev
-/libsmraw
-/libuna
