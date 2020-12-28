@@ -1564,6 +1564,94 @@ void Handle::SetFormat( System::Byte format )
 	}
 }
 
+void Handle::SetMaximumSegmentSize(System::UInt64 maximum_segment_size)
+{
+  char ewf_error_string[ EWF_NET_ERROR_STRING_SIZE ];
+
+	libewf_error_t *error          = NULL;
+	System::String^ error_string   = nullptr;
+	System::String^ function       = "Handle::SetMaximumSegmentSize";
+
+  libewf_handle_t *handle = NULL;
+	Marshal::WriteIntPtr((IntPtr) &handle, this->ewf_handle );
+
+  uint64_t ewf_maximum_segment_size = 0;
+  Marshal::WriteInt64((IntPtr) &ewf_maximum_segment_size, maximum_segment_size );
+
+  if( libewf_handle_set_maximum_segment_size(
+		    handle,
+		    ewf_maximum_segment_size,
+		    &error ) != 1 )
+	{
+		error_string = gcnew System::String(
+		                      "ewf.net " + function + ": unable to set maximum segment size in ewf handle." );
+
+		if( libewf_error_backtrace_sprint(
+		     error,
+		     &( ewf_error_string[ 1 ] ),
+		     EWF_NET_ERROR_STRING_SIZE - 1 ) > 0 )
+		{
+			ewf_error_string[ 0 ] = '\n';
+
+			error_string = System::String::Concat(
+			                error_string,
+			                gcnew System::String(
+			                       ewf_error_string ) );
+		}
+		libewf_error_free(
+		 &error );
+
+		throw gcnew System::Exception(
+			     error_string );
+	}
+}
+
+void Handle::SetCompression(LIBEWF_COMPRESSION_LEVELS compression_level, LIBEWF_COMPRESSION_FLAGS compression_flags)
+{
+  char ewf_error_string[ EWF_NET_ERROR_STRING_SIZE ];
+
+	libewf_error_t *error          = NULL;
+	System::String^ error_string   = nullptr;
+	System::String^ function       = "Handle::SetCompression";
+
+  libewf_handle_t *handle = NULL;
+	Marshal::WriteIntPtr((IntPtr) &handle, this->ewf_handle );
+
+  uint8_t ewf_compression_level = 0;
+	Marshal::WriteByte((IntPtr) &ewf_compression_level, safe_cast<uint8_t>(compression_level));
+
+  uint8_t ewf_compression_flags = 0;
+	Marshal::WriteByte((IntPtr) &ewf_compression_flags, safe_cast<uint8_t>(compression_flags));
+
+	if( libewf_handle_set_compression_values(
+	     handle,
+	     ewf_compression_level,
+	     ewf_compression_flags,
+	     &error ) != 1 )
+	{
+		error_string = gcnew System::String(
+		                      "ewf.net " + function + ": unable to set compression in ewf handle." );
+
+		if( libewf_error_backtrace_sprint(
+		     error,
+		     &( ewf_error_string[ 1 ] ),
+		     EWF_NET_ERROR_STRING_SIZE - 1 ) > 0 )
+		{
+			ewf_error_string[ 0 ] = '\n';
+
+			error_string = System::String::Concat(
+			                error_string,
+			                gcnew System::String(
+			                       ewf_error_string ) );
+		}
+		libewf_error_free(
+		 &error );
+
+		throw gcnew System::Exception(
+			     error_string );
+	}
+}
+
 int Handle::GetNumberOfAcquiryErrors( void )
 {
 	char ewf_error_string[ EWF_NET_ERROR_STRING_SIZE ];

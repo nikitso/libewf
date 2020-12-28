@@ -32,6 +32,70 @@ using namespace System::IO;
 
 namespace EWF {
 
+/* The access flags definitions
+ * bit 1							set to 1 for read access
+ * bit 2							set to 1 for write access
+ * bit 3-4							not used
+ * bit 5        set to 1 to resume write
+ * bit 6-8							not used
+ */
+[System::Flags]
+public enum class LIBEWF_ACCESS_FLAGS
+{
+	LIBEWF_ACCESS_FLAG_READ					= 0x01,
+	LIBEWF_ACCESS_FLAG_WRITE				= 0x02,
+
+	LIBEWF_ACCESS_FLAG_RESUME				= 0x10
+};
+
+/* The compression level definitions
+ */
+public enum class LIBEWF_COMPRESSION_LEVELS : int
+{
+	LIBEWF_COMPRESSION_LEVEL_DEFAULT			= -1,
+	LIBEWF_COMPRESSION_LEVEL_NONE				= 0,
+	LIBEWF_COMPRESSION_LEVEL_FAST				= 1,
+	LIBEWF_COMPRESSION_LEVEL_BEST				= 2,
+};
+
+/* The compression flags
+ * bit 1							set to 1 for empty block compression
+ *              detects empty blocks and stored them compressed, the compression
+ *              is only done once
+ * bit 2							set to 1 for pattern fill compression
+ *              this implies empty block compression using the pattern fill method
+ *              used internally only
+ * bit 3-8							not used
+ */
+[System::Flags]
+public enum class LIBEWF_COMPRESSION_FLAGS
+{
+  LIBEWF_COMPRESS_FLAG_NONE                         = (uint8_t) 0x00,
+	LIBEWF_COMPRESS_FLAG_USE_EMPTY_BLOCK_COMPRESSION	= (uint8_t) 0x01,
+	LIBEWF_COMPRESS_FLAG_USE_PATTERN_FILL_COMPRESSION	= (uint8_t) 0x10,
+};
+
+/* The media type definitions
+ */
+public enum class LIBEWF_MEDIA_TYPES
+{
+	LIBEWF_MEDIA_TYPE_REMOVABLE			= 0x00,
+	LIBEWF_MEDIA_TYPE_FIXED					= 0x01,
+	LIBEWF_MEDIA_TYPE_OPTICAL				= 0x03,
+	LIBEWF_MEDIA_TYPE_SINGLE_FILES	= 0x0e,
+	LIBEWF_MEDIA_TYPE_MEMORY				= 0x10
+};
+
+/* The media flags definitions
+ */
+[System::Flags]
+public enum class LIBEWF_MEDIA_FLAGS
+{
+	LIBEWF_MEDIA_FLAG_PHYSICAL			= 0x02,
+	LIBEWF_MEDIA_FLAG_FASTBLOC			= 0x04,
+	LIBEWF_MEDIA_FLAG_TABLEAU				= 0x08
+};
+
 public ref class Handle sealed
 {
 	private:
@@ -116,6 +180,10 @@ public ref class Handle sealed
 		System::Byte GetFormat( void );
 
 		void SetFormat( System::Byte format );
+
+  	void SetMaximumSegmentSize(System::UInt64 maximum_segment_size);
+
+    void SetCompression(LIBEWF_COMPRESSION_LEVELS compression_level, LIBEWF_COMPRESSION_FLAGS compression_flags);
 
 		/* TODO add GUID functions ? */
 
