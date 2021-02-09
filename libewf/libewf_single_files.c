@@ -1002,6 +1002,10 @@ int libewf_single_files_parse_format(
 				{
 					*format = LIBEWF_FORMAT_LOGICAL_ENCASE7;
 				}
+        else if( value_index == 3 )
+				{
+					*format = LIBEWF_FORMAT_LOGICAL_TABLEAU_TX1;
+				}
 			}
 		}
 	}
@@ -3596,6 +3600,8 @@ int libewf_single_files_parse_utf8_string(
 	}
 	line_index += 1;
 
+  // Tableau TX1 generates single files data section without REC, PERM, SRCE, SUB categories.
+  // Probably it's optional
 	if( libewf_single_files_parse_rec_category(
 	     single_files,
 	     lines,
@@ -3603,14 +3609,13 @@ int libewf_single_files_parse_utf8_string(
 	     media_size,
 	     error ) != 1 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to parse rec category.",
-		 function );
+		// REC category is not found
+    // Exact value size is unknown, take upper bound to satisfy bound checks
+    uint64_t value_64bit   = 1;
+		value_64bit <<= 63;
+		value_64bit  -= 1;
 
-		goto on_error;
+    *media_size = value_64bit;
 	}
 	if( libewf_single_files_parse_perm_category(
 	     single_files,
@@ -3618,14 +3623,7 @@ int libewf_single_files_parse_utf8_string(
 	     &line_index,
 	     error ) != 1 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to parse perm category.",
-		 function );
-
-		goto on_error;
+		// PERM category is not found
 	}
 	if( libewf_single_files_parse_srce_category(
 	     single_files,
@@ -3633,14 +3631,7 @@ int libewf_single_files_parse_utf8_string(
 	     &line_index,
 	     error ) != 1 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to parse srce category.",
-		 function );
-
-		goto on_error;
+		// SRCE category is not found
 	}
 	if( libewf_single_files_parse_sub_category(
 	     single_files,
@@ -3648,14 +3639,7 @@ int libewf_single_files_parse_utf8_string(
 	     &line_index,
 	     error ) != 1 )
 	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to parse sub category.",
-		 function );
-
-		goto on_error;
+		// SUB category is not found
 	}
 	if( libewf_single_files_parse_entry_category(
 	     single_files,

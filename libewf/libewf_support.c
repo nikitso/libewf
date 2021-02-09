@@ -796,6 +796,7 @@ int libewf_glob(
 	 && ( format != LIBEWF_FORMAT_LOGICAL_ENCASE5 )
 	 && ( format != LIBEWF_FORMAT_LOGICAL_ENCASE6 )
 	 && ( format != LIBEWF_FORMAT_LOGICAL_ENCASE7 )
+   && ( format != LIBEWF_FORMAT_LOGICAL_TABLEAU_TX1 )
 	 && ( format != LIBEWF_FORMAT_V2_ENCASE7 )
 	 && ( format != LIBEWF_FORMAT_V2_LOGICAL_ENCASE7 )
 	 && ( format != LIBEWF_FORMAT_EWF )
@@ -879,6 +880,7 @@ int libewf_glob(
 		case LIBEWF_FORMAT_LOGICAL_ENCASE5:
 		case LIBEWF_FORMAT_LOGICAL_ENCASE6:
 		case LIBEWF_FORMAT_LOGICAL_ENCASE7:
+    case LIBEWF_FORMAT_LOGICAL_TABLEAU_TX1:
 			segment_file_type = LIBEWF_SEGMENT_FILE_TYPE_EWF1_LOGICAL;
 			break;
 
@@ -1402,6 +1404,7 @@ int libewf_glob_wide(
 	 && ( format != LIBEWF_FORMAT_LOGICAL_ENCASE5 )
 	 && ( format != LIBEWF_FORMAT_LOGICAL_ENCASE6 )
 	 && ( format != LIBEWF_FORMAT_LOGICAL_ENCASE7 )
+   && ( format != LIBEWF_FORMAT_LOGICAL_TABLEAU_TX1 )
 	 && ( format != LIBEWF_FORMAT_V2_ENCASE7 )
 	 && ( format != LIBEWF_FORMAT_V2_LOGICAL_ENCASE7 )
 	 && ( format != LIBEWF_FORMAT_EWF )
@@ -1485,6 +1488,7 @@ int libewf_glob_wide(
 		case LIBEWF_FORMAT_LOGICAL_ENCASE5:
 		case LIBEWF_FORMAT_LOGICAL_ENCASE6:
 		case LIBEWF_FORMAT_LOGICAL_ENCASE7:
+    case LIBEWF_FORMAT_LOGICAL_TABLEAU_TX1:
 			segment_file_type = LIBEWF_SEGMENT_FILE_TYPE_EWF1_LOGICAL;
 			break;
 

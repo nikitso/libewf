@@ -2712,7 +2712,7 @@ int libewf_internal_handle_open_read_segment_file_section_data(
 
 		if( internal_handle->io_handle->segment_file_type != LIBEWF_SEGMENT_FILE_TYPE_EWF2_LOGICAL )
 		{
-			if( internal_handle->io_handle->format == LIBEWF_FORMAT_LOGICAL_ENCASE7 )
+			if( internal_handle->io_handle->format == LIBEWF_FORMAT_LOGICAL_ENCASE7 || internal_handle->io_handle->format == LIBEWF_FORMAT_LOGICAL_TABLEAU_TX1)
 			{
 				internal_handle->io_handle->format = LIBEWF_FORMAT_V2_LOGICAL_ENCASE7;
 			}

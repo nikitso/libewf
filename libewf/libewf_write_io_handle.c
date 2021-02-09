@@ -681,6 +681,7 @@ int libewf_write_io_handle_initialize_values(
 		 && ( io_handle->format != LIBEWF_FORMAT_LOGICAL_ENCASE5 )
 		 && ( io_handle->format != LIBEWF_FORMAT_LOGICAL_ENCASE6 )
 		 && ( io_handle->format != LIBEWF_FORMAT_LOGICAL_ENCASE7 )
+     && ( io_handle->format != LIBEWF_FORMAT_LOGICAL_TABLEAU_TX1 )
 		 && ( io_handle->format != LIBEWF_FORMAT_V2_ENCASE7 )
 		 && ( io_handle->format != LIBEWF_FORMAT_FTK_IMAGER )
 		 && ( io_handle->format != LIBEWF_FORMAT_EWFX ) )

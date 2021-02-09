@@ -155,15 +155,7 @@ int libewf_file_entry_initialize(
 		     &( internal_file_entry->permission_group ),
 		     error ) != 1 )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve permission group: %d.",
-			 function,
-			 permission_group_index );
-
-			goto on_error;
+			// PERM category is optional
 		}
 	}
 	if( libewf_lef_file_entry_get_source_identifier(
@@ -188,15 +180,7 @@ int libewf_file_entry_initialize(
 		     &( internal_file_entry->lef_source ),
 		     error ) != 1 )
 		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve source: %d.",
-			 function,
-			 source_identifier );
-
-			goto on_error;
+			// SRCE category is optional
 		}
 	}
 #if defined( HAVE_LIBEWF_MULTI_THREAD_SUPPORT )
