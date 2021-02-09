@@ -2,7 +2,7 @@
 #
 # Python-bindings handle type test script
 #
-# Copyright (C) 2006-2020, Joachim Metz <joachim.metz@gmail.com>
+# Copyright (C) 2006-2021, Joachim Metz <joachim.metz@gmail.com>
 #
 # Refer to AUTHORS for acknowledgements.
 #
@@ -360,6 +360,29 @@ class HandleTypeTests(unittest.TestCase):
     # Test the seek without open.
     with self.assertRaises(IOError):
       ewf_handle.seek_offset(16, os.SEEK_SET)
+
+  def test_seek_offset_file_object(self):
+    """Tests the seek_offset function on a file-like object."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    if not os.path.isfile(unittest.source):
+      raise unittest.SkipTest("source not a regular file")
+
+    ewf_handle = pyewf.handle()
+
+    with open(unittest.source, "rb") as file_object:
+      ewf_handle.open_file_objects([file_object])
+
+      offset = ewf_handle.get_offset()
+      self.assertEqual(offset, 0)
+
+      ewf_handle.seek_offset(16, os.SEEK_SET)
+
+      offset = ewf_handle.get_offset()
+      self.assertEqual(offset, 16)
+
+      ewf_handle.close()
 
   def test_get_offset(self):
     """Tests the get_offset function."""

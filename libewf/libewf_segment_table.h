@@ -1,7 +1,7 @@
 /*
  * Segment table functions
  *
- * Copyright (C) 2006-2020, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2006-2021, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -180,13 +180,6 @@ int libewf_segment_table_get_segment_file_at_offset(
      uint32_t *segment_number,
      off64_t *segment_file_data_offset,
      libewf_segment_file_t **segment_file,
-     libcerror_error_t **error );
-
-int libewf_segment_table_set_segment_file_by_index(
-     libewf_segment_table_t *segment_table,
-     libbfio_pool_t *file_io_pool,
-     uint32_t segment_number,
-     libewf_segment_file_t *segment_file,
      libcerror_error_t **error );
 
 int libewf_segment_table_append_segment_by_segment_file(
