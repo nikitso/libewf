@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
@@ -187,12 +187,22 @@
   <ItemGroup>
     <ResourceCompile Include="..\..\ewf.net\ewf.net.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\libewf\libewf.vcxproj">
-      <Project>{41c2387c-9d7f-42b9-9998-3430fbc95ae7}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln')">
+    <Link>
+      <AdditionalDependencies>libewf.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\$(PlatformTarget)\</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <Choose>
+    <When Condition="Exists('$(SolutionDir)fs.sln')">
+      <ItemGroup>
+        <ProjectReference Include="..\libewf\libewf.vcxproj">
+          <Project>{41c2387c-9d7f-42b9-9998-3430fbc95ae7}</Project>
+          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
