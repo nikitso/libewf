@@ -49,12 +49,6 @@ using namespace System::Security::Permissions;
 
 [assembly:AssemblyVersionAttribute("1.0.*")];
 
-[assembly:ComVisible(false)];
-
-[assembly:CLSCompliantAttribute(true)];
-
-[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
-
 namespace EWF {
 
 System::String^ Support::GetVersion( void )
