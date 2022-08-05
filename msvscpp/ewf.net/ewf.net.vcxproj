@@ -195,11 +195,23 @@
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Debug\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='VSDebug|Win32'">false</ConformanceMode>
+    </ClCompile>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='VSDebug|x64'">false</ConformanceMode>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Release\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ConformanceMode>
+    </ClCompile>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ConformanceMode>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
