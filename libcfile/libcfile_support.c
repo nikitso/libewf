@@ -25,6 +25,7 @@
 #include <system_string.h>
 #include <types.h>
 #include <wide_string.h>
+#include <FileStreamInterface.h>
 
 #if defined( HAVE_SYS_STAT_H )
 #include <sys/stat.h>
@@ -112,8 +113,6 @@ int libcfile_set_codepage(
 #if defined( WINAPI )
 
 /* Determines if a file exists
- * This function uses the WINAPI function for Windows XP (0x0501) or later,
- * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
  * Returns 1 if the file exists, 0 if not or -1 on error
  */
 int libcfile_file_exists(
@@ -121,11 +120,8 @@ int libcfile_file_exists(
      libcerror_error_t **error )
 {
 	static char *function  = "libcfile_file_exists";
-	size_t filename_length = 0;
 	DWORD error_code       = 0;
-	DWORD file_attributes  = 0;
-	HANDLE handle          = INVALID_HANDLE_VALUE;
-	int is_device_filename = 0;
+	FileStreamHandle handle = NULL;
 	int result             = 1;
 
 	if( filename == NULL )
@@ -139,145 +135,58 @@ int libcfile_file_exists(
 
 		return( -1 );
 	}
-	filename_length = narrow_string_length(
-	                   filename );
-
-	if( filename_length > 4 )
+  
+  handle = OpenFileHandle(filename);
+	if( handle == NULL )
 	{
-		if( ( filename[ 0 ] == '\\' )
-		 && ( filename[ 1 ] == '\\' )
-		 && ( filename[ 2 ] == '.' )
-		 && ( filename[ 3 ] == '\\' ) )
+		error_code = (uint32_t) GetLastError();
+
+		switch( error_code )
 		{
-			/* Ignore \\.\F:\ which is an alternative notation for F:
-			 */
-			if( ( filename_length < 7 )
-			 || ( filename[ 5 ] != ':' )
-			 || ( filename[ 6 ] != '\\' ) )
-			{
-				is_device_filename = 1;
-			}
-		}
-	}
-	if( is_device_filename != 0 )
-	{
-#if ( WINVER <= 0x0500 )
-		handle = libcfile_CreateFileA(
-		          (LPCSTR) filename,
-		          GENERIC_READ,
-		          FILE_SHARE_READ | FILE_SHARE_WRITE,
-		          NULL,
-		          OPEN_EXISTING,
-		          FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
-		          NULL );
-#else
-		handle = CreateFileA(
-		          (LPCSTR) filename,
-		          GENERIC_READ,
-		          FILE_SHARE_READ | FILE_SHARE_WRITE,
-		          NULL,
-		          OPEN_EXISTING,
-		          FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
-		          NULL );
-#endif
-		if( handle == INVALID_HANDLE_VALUE )
-		{
-			error_code = (uint32_t) GetLastError();
+			case ERROR_ACCESS_DENIED:
+				result = 1;
 
-			switch( error_code )
-			{
-				case ERROR_ACCESS_DENIED:
-					result = 1;
+				break;
 
-					break;
+			case ERROR_FILE_NOT_FOUND:
+			case ERROR_PATH_NOT_FOUND:
+				result = 0;
 
-				case ERROR_FILE_NOT_FOUND:
-				case ERROR_PATH_NOT_FOUND:
-					result = 0;
+				break;
 
-					break;
-
-				default:
-					libcerror_system_set_error(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_OPEN_FAILED,
-					 error_code,
-					 "%s: unable to open file: %s.",
-					 function,
-					 filename );
-
-					return( -1 );
-			}
-		}
-		else
-		{
-#if ( WINVER <= 0x0500 )
-			result = libcfile_CloseHandle(
-			          handle );
-#else
-			result = CloseHandle(
-			          handle );
-#endif
-			if( result == 0 )
-			{
-				error_code = GetLastError();
-
+			default:
 				libcerror_system_set_error(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_CLOSE_FAILED,
+				 LIBCERROR_IO_ERROR_OPEN_FAILED,
 				 error_code,
-				 "%s: unable to close file.",
-				 function );
+				 "%s: unable to open file: %s.",
+				 function,
+				 filename );
 
 				return( -1 );
-			}
-			result = 1;
 		}
 	}
 	else
 	{
-		/* Note that GetFileAttributesA does not support Windows device file names.
-		 */
-#if ( WINVER <= 0x0500 )
-		file_attributes = libcfile_GetFileAttributesA(
-		                   (LPCSTR) filename );
-#else
-		file_attributes = GetFileAttributesA(
-		                   (LPCSTR) filename );
-#endif
-		if( file_attributes == INVALID_FILE_ATTRIBUTES )
+    result = CloseFileHandle(handle);
+		if( result == 0 )
 		{
 			error_code = GetLastError();
 
-			switch( error_code )
-			{
-				case ERROR_ACCESS_DENIED:
-					result = 1;
+			libcerror_system_set_error(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
+			 error_code,
+			 "%s: unable to close file.",
+			 function );
 
-					break;
-
-				case ERROR_FILE_NOT_FOUND:
-				case ERROR_PATH_NOT_FOUND:
-					result = 0;
-
-					break;
-
-				default:
-					libcerror_system_set_error(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_GENERIC,
-					 error_code,
-					 "%s: unable to determine attributes of file: %s.",
-					 function,
-					 filename );
-
-					return( -1 );
-			}
+			return( -1 );
 		}
+		result = 1;
 	}
+
 	return( result );
 }
 

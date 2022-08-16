@@ -25,6 +25,7 @@
 #include <system_string.h>
 #include <types.h>
 #include <wide_string.h>
+#include <FileStreamInterface.h>
 
 #if defined( HAVE_SYS_STAT_H )
 #include <sys/stat.h>
@@ -156,11 +157,9 @@ int libcfile_file_initialize(
 
 		goto on_error;
 	}
-#if defined( WINAPI )
-	internal_file->handle = INVALID_HANDLE_VALUE;
-#else
-	internal_file->descriptor = -1;
-#endif
+
+  internal_file->Handle = NULL;
+  internal_file->descriptor = -1;
 	*file = (libcfile_file_t *) internal_file;
 
 	return( 1 );
@@ -200,11 +199,7 @@ int libcfile_file_free(
 	{
 		internal_file = (libcfile_internal_file_t *) *file;
 
-#if defined( WINAPI )
-		if( internal_file->handle != INVALID_HANDLE_VALUE )
-#else
-		if( internal_file->descriptor != -1 )
-#endif
+		if( internal_file->Handle != NULL )
 		{
 			if( libcfile_file_close(
 			     *file,
@@ -293,10 +288,6 @@ int libcfile_file_open_with_error_code(
 
 	libcfile_internal_file_t *internal_file = NULL;
 	static char *function                   = "libcfile_file_open_with_error_code";
-	DWORD file_io_access_flags              = 0;
-	DWORD file_io_creation_flags            = 0;
-	DWORD file_io_shared_flags              = 0;
-	DWORD flags_and_attributes              = 0;
 	size_t filename_length                  = 0;
 	ssize_t read_count                      = 0;
 
@@ -313,7 +304,7 @@ int libcfile_file_open_with_error_code(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
-	if( internal_file->handle != INVALID_HANDLE_VALUE )
+	if( internal_file->Handle != NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -335,46 +326,7 @@ int libcfile_file_open_with_error_code(
 
 		return( -1 );
 	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 ) )
-	{
-		file_io_access_flags   = GENERIC_WRITE | GENERIC_READ;
-		file_io_creation_flags = OPEN_ALWAYS;
-		file_io_shared_flags   = FILE_SHARE_READ;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	{
-		file_io_access_flags   = GENERIC_READ;
-		file_io_creation_flags = OPEN_EXISTING;
 
-		/* FILE_SHARE_WRITE is set to allow reading files that are
-		 * currently being written FILE_SHARE_READ alone does not suffice
-		 */
-		file_io_shared_flags = FILE_SHARE_READ | FILE_SHARE_WRITE;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	{
-		file_io_access_flags   = GENERIC_WRITE;
-		file_io_creation_flags = OPEN_ALWAYS;
-		file_io_shared_flags   = FILE_SHARE_READ;
-	}
-	else
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported access flags: 0x%02x.",
-		 function,
-		 access_flags );
-
-		return( -1 );
-	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_TRUNCATE ) != 0 ) )
-	{
-		file_io_creation_flags = CREATE_ALWAYS;
-	}
 	if( error_code == NULL )
 	{
 		libcerror_error_set(
@@ -386,55 +338,11 @@ int libcfile_file_open_with_error_code(
 
 		return( -1 );
 	}
-	filename_length = narrow_string_length(
-	                   filename );
-
-	if( filename_length > 4 )
+  
+	internal_file->Handle = OpenFileHandle(filename);
+	if(internal_file->Handle == NULL )
 	{
-		if( ( filename[ 0 ] == '\\' )
-		 && ( filename[ 1 ] == '\\' )
-		 && ( filename[ 2 ] == '.' )
-		 && ( filename[ 3 ] == '\\' ) )
-		{
-			/* Ignore \\.\F:\ which is an alternative notation for F:
-			 */
-			if( ( filename_length < 7 )
-			 || ( filename[ 5 ] != ':' )
-			 || ( filename[ 6 ] != '\\' ) )
-			{
-				internal_file->is_device_filename  = 1;
-				internal_file->use_asynchronous_io = 1;
-			}
-		}
-	}
-	flags_and_attributes = FILE_ATTRIBUTE_NORMAL;
-
-	if( internal_file->use_asynchronous_io != 0 )
-	{
-		flags_and_attributes |= FILE_FLAG_OVERLAPPED;
-	}
-#if ( WINVER <= 0x0500 )
-	internal_file->handle = libcfile_CreateFileA(
-	                         (LPCSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#else
-	internal_file->handle = CreateFileA(
-	                         (LPCSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#endif
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
-	{
-		*error_code = (uint32_t) GetLastError();
+		*error_code = GetLastFileHandleError();
 
 		switch( *error_code )
 		{
@@ -475,93 +383,7 @@ int libcfile_file_open_with_error_code(
 		}
 		return( -1 );
 	}
-	if( internal_file->is_device_filename != 0 )
-	{
-		read_count = libcfile_internal_file_io_control_read_with_error_code(
-		              internal_file,
-		              FSCTL_ALLOW_EXTENDED_DASD_IO,
-		              NULL,
-		              0,
-		              NULL,
-		              0,
-		              error_code,
-		              error );
 
-		if( read_count == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 "%s: unable to query device for: FSCTL_ALLOW_EXTENDED_DASD_IO.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-#if ( WINVER >= 0x0600 )
-		result = GetFileInformationByHandleEx(
-		          internal_file->handle,
-		          FileAlignmentInfo,
-		          (void *) &file_alignment_information,
-		          (DWORD) sizeof( FILE_ALIGNMENT_INFO ) );
-
-		if( result == FALSE )
-		{
-			*error_code = (uint32_t) GetLastError();
-
-			libcerror_system_set_error(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 *error_code,
-			 "%s: unable to retrieve file alignment information.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-		else if( file_alignment_information.AlignmentRequirement != 0 )
-		{
-			if( libcfile_internal_file_set_block_size(
-			     internal_file,
-			     (size_t) 512,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set block size.",
-				 function );
-
-				return( -1 );
-			}
-		}
-#endif /* ( WINVER >= 0x0600 ) */
-	}
 	if( libcfile_internal_file_get_size(
 	     internal_file,
 	     &( internal_file->size ),
@@ -793,8 +615,6 @@ int libcfile_file_open_wide(
 #if defined( WINAPI )
 
 /* Opens a file
- * This function uses the WINAPI function for Windows XP (0x0501) or later
- * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
  * Returns 1 if successful or -1 on error
  */
 int libcfile_file_open_wide_with_error_code(
@@ -812,10 +632,6 @@ int libcfile_file_open_wide_with_error_code(
 
 	libcfile_internal_file_t *internal_file = NULL;
 	static char *function                   = "libcfile_file_open_wide_with_error_code";
-	DWORD file_io_access_flags              = 0;
-	DWORD file_io_creation_flags            = 0;
-	DWORD file_io_shared_flags              = 0;
-	DWORD flags_and_attributes              = 0;
 	size_t filename_length                  = 0;
 	ssize_t read_count                      = 0;
 
@@ -832,7 +648,7 @@ int libcfile_file_open_wide_with_error_code(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
-	if( internal_file->handle != INVALID_HANDLE_VALUE )
+	if( internal_file->Handle != NULL)
 	{
 		libcerror_error_set(
 		 error,
@@ -854,46 +670,7 @@ int libcfile_file_open_wide_with_error_code(
 
 		return( -1 );
 	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 ) )
-	{
-		file_io_access_flags   = GENERIC_WRITE | GENERIC_READ;
-		file_io_creation_flags = OPEN_ALWAYS;
-		file_io_shared_flags   = FILE_SHARE_READ;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	{
-		file_io_access_flags   = GENERIC_READ;
-		file_io_creation_flags = OPEN_EXISTING;
 
-		/* FILE_SHARE_WRITE is set to allow reading files that are
-		 * currently being written FILE_SHARE_READ alone does not suffice
-		 */
-		file_io_shared_flags = FILE_SHARE_READ | FILE_SHARE_WRITE;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	{
-		file_io_access_flags   = GENERIC_WRITE;
-		file_io_creation_flags = OPEN_ALWAYS;
-		file_io_shared_flags   = FILE_SHARE_READ;
-	}
-	else
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported access flags: 0x%02x.",
-		 function,
-		 access_flags );
-
-		return( -1 );
-	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_TRUNCATE ) != 0 ) )
-	{
-		file_io_creation_flags = CREATE_ALWAYS;
-	}
 	if( error_code == NULL )
 	{
 		libcerror_error_set(
@@ -905,55 +682,10 @@ int libcfile_file_open_wide_with_error_code(
 
 		return( -1 );
 	}
-	filename_length = wide_string_length(
-	                   filename );
-
-	if( filename_length > 4 )
+  internal_file->Handle = OpenFileHandle(filename);
+	if( internal_file->Handle == NULL )
 	{
-		if( ( filename[ 0 ] == (wchar_t) '\\' )
-		 && ( filename[ 1 ] == (wchar_t) '\\' )
-		 && ( filename[ 2 ] == (wchar_t) '.' )
-		 && ( filename[ 3 ] == (wchar_t) '\\' ) )
-		{
-			/* Ignore \\.\F:\ which is an alternative notation for F:
-			 */
-			if( ( filename_length < 7 )
-			 || ( filename[ 5 ] != (wchar_t) ':' )
-			 || ( filename[ 6 ] != (wchar_t) '\\' ) )
-			{
-				internal_file->is_device_filename  = 1;
-				internal_file->use_asynchronous_io = 1;
-			}
-		}
-	}
-	flags_and_attributes = FILE_ATTRIBUTE_NORMAL;
-
-	if( internal_file->use_asynchronous_io != 0 )
-	{
-		flags_and_attributes |= FILE_FLAG_OVERLAPPED;
-	}
-#if ( WINVER <= 0x0500 )
-	internal_file->handle = libcfile_CreateFileW(
-	                         (LPCWSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#else
-	internal_file->handle = CreateFileW(
-	                         (LPCWSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#endif
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
-	{
-		*error_code = (uint32_t) GetLastError();
+		*error_code = GetLastFileHandleError();
 
 		switch( *error_code )
 		{
@@ -994,93 +726,7 @@ int libcfile_file_open_wide_with_error_code(
 		}
 		return( -1 );
 	}
-	if( internal_file->is_device_filename != 0 )
-	{
-		read_count = libcfile_internal_file_io_control_read_with_error_code(
-		              internal_file,
-		              FSCTL_ALLOW_EXTENDED_DASD_IO,
-		              NULL,
-		              0,
-		              NULL,
-		              0,
-		              error_code,
-		              error );
 
-		if( read_count == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 "%s: unable to query device for: FSCTL_ALLOW_EXTENDED_DASD_IO.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-#if ( WINVER >= 0x0600 )
-		result = GetFileInformationByHandleEx(
-		          internal_file->handle,
-		          FileAlignmentInfo,
-		          (void *) &file_alignment_information,
-		          (DWORD) sizeof( FILE_ALIGNMENT_INFO ) );
-
-		if( result == FALSE )
-		{
-			*error_code = (uint32_t) GetLastError();
-
-			libcerror_system_set_error(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 *error_code,
-			 "%s: unable to retrieve file alignment information.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-		else if( file_alignment_information.AlignmentRequirement != 0 )
-		{
-			if( libcfile_internal_file_set_block_size(
-			     internal_file,
-			     (size_t) 512,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set block size.",
-				 function );
-
-				return( -1 );
-			}
-		}
-#endif /* ( WINVER >= 0x0600 ) */
-	}
 	if( libcfile_internal_file_get_size(
 	     internal_file,
 	     &( internal_file->size ),
@@ -1343,8 +989,6 @@ on_error:
 #if defined( WINAPI )
 
 /* Closes the file
- * This function uses the WINAPI function for Windows 2000 (0x0500) or later
- * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
  * Returns 0 if successful or -1 on error
  */
 int libcfile_file_close(
@@ -1369,18 +1013,12 @@ int libcfile_file_close(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
-	if( internal_file->handle != INVALID_HANDLE_VALUE )
+	if( internal_file->Handle != NULL )
 	{
-#if ( WINVER <= 0x0500 )
-		result = libcfile_CloseHandle(
-		          internal_file->handle );
-#else
-		result = CloseHandle(
-		          internal_file->handle );
-#endif
+    result = CloseFileHandle(internal_file->Handle);
 		if( result == 0 )
 		{
-			error_code = GetLastError();
+			error_code = GetLastFileHandleError();
 
 			libcerror_system_set_error(
 			 error,
@@ -1392,9 +1030,7 @@ int libcfile_file_close(
 
 			return( -1 );
 		}
-		internal_file->handle              = INVALID_HANDLE_VALUE;
-		internal_file->is_device_filename  = 0;
-		internal_file->use_asynchronous_io = 0;
+		internal_file->Handle              = NULL;
 		internal_file->access_flags        = 0;
 		internal_file->size                = 0;
 		internal_file->current_offset      = 0;
@@ -1493,7 +1129,7 @@ int libcfile_file_close(
  * Returns the number of bytes read if successful, or -1 on error
  */
 ssize_t libcfile_file_read_buffer(
-         libcfile_file_t *file,
+         FileStreamHandle *file,
          uint8_t *buffer,
          size_t size,
          libcerror_error_t **error )
@@ -1501,13 +1137,13 @@ ssize_t libcfile_file_read_buffer(
 	static char *function = "libcfile_file_read_buffer";
 	ssize_t read_count    = 0;
 	uint32_t error_code   = 0;
-
-	read_count = libcfile_file_read_buffer_with_error_code(
-	              file,
-	              buffer,
-	              size,
-	              &error_code,
-	              error );
+  
+  read_count = libcfile_file_read_buffer_with_error_code(
+                file,
+                buffer,
+                size,
+                &error_code,
+                error);
 
 	if( read_count == -1 )
 	{
@@ -1525,6 +1161,7 @@ ssize_t libcfile_file_read_buffer(
 
 #if defined( WINAPI )
 
+// Todo [e01 patch]: Do we need asynchronous reading?
 /* Reads a buffer from the file
  * This is an internal function to wrap ReadFile in synchronous and asynchronous mode
  * the current_offset is only used in asynchronous mode.
@@ -1605,51 +1242,11 @@ ssize_t libcfile_internal_file_read_buffer_at_offset_with_error_code(
 
 		return( -1 );
 	}
-	/* For Windows devices we need to use asynchronous IO here
-	 * otherwise the ReadFile function can return ERROR_INVALID_PARAMETER
-	 * if the device is read concurrently and the the block is too large
-	 * to fill. Using smaller block sizes decreases the likelyhood but
-	 * also impacts the performance.
-	 */
-	if( internal_file->use_asynchronous_io != 0 )
-	{
-		if( memory_set(
-		     &overlapped_data,
-		     0,
-		     sizeof( OVERLAPPED ) ) == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_MEMORY,
-			 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear overlapped data.",
-			 function );
 
-			return( -1 );
-		}
-		overlapped = &overlapped_data;
-
-		overlapped->Offset     = (DWORD) ( 0x0ffffffffUL & current_offset );
-		overlapped->OffsetHigh = (DWORD) ( current_offset >> 32 );
-	}
-#if ( WINVER <= 0x0500 )
-	result = libcfile_ReadFile(
-		  internal_file->handle,
-		  buffer,
-		  (DWORD) size,
-		  &read_count,
-		  overlapped );
-#else
-	result = ReadFile(
-		  internal_file->handle,
-		  (VOID *) buffer,
-		  (DWORD) size,
-		  &read_count,
-		  overlapped );
-#endif
+  result = ReadFileHandle(internal_file->Handle, buffer, size, &read_count);
 	if( result == 0 )
 	{
-		*error_code = (uint32_t) GetLastError();
+		*error_code = GetLastFileHandleError();
 
 		switch( *error_code )
 		{
@@ -1681,6 +1278,7 @@ ssize_t libcfile_internal_file_read_buffer_at_offset_with_error_code(
 			  &read_count,
 			  TRUE );
 #else
+    // Todo [e01 patch]: Patch or remove
 		result = GetOverlappedResult(
 			  internal_file->handle,
 			  overlapped,
@@ -1689,7 +1287,7 @@ ssize_t libcfile_internal_file_read_buffer_at_offset_with_error_code(
 #endif
 		if( result == 0 )
 		{
-			*error_code = (uint32_t) GetLastError();
+			*error_code = GetLastFileHandleError();
 
 			switch( *error_code )
 			{
@@ -1745,7 +1343,7 @@ ssize_t libcfile_file_read_buffer_with_error_code(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
+	if( internal_file->Handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -2348,6 +1946,7 @@ ssize_t libcfile_file_write_buffer(
 
 #if defined( WINAPI )
 
+// Todo [e01 patch]: Do we need this?
 /* Writes a buffer to the file
  * This function uses the WINAPI function for Windows XP (0x0501) or later
  * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
@@ -2378,6 +1977,7 @@ ssize_t libcfile_file_write_buffer_with_error_code(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
+  // Todo [e01 patch]: Patch or remove
 	if( internal_file->handle == INVALID_HANDLE_VALUE )
 	{
 		libcerror_error_set(
@@ -2443,7 +2043,7 @@ ssize_t libcfile_file_write_buffer_with_error_code(
 #endif
 	if( result == 0 )
 	{
-		*error_code = (uint32_t) GetLastError();
+		*error_code = GetLastFileHandleError();
 
 		libcerror_system_set_error(
 		 error,
@@ -2577,8 +2177,6 @@ ssize_t libcfile_file_write_buffer_with_error_code(
 #if defined( WINAPI )
 
 /* Seeks a certain offset within the file
- * This function uses the WINAPI function for Windows XP (0x0501) or later
- * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
  * Returns the offset if the seek is successful or -1 on error
  */
 off64_t libcfile_file_seek_offset(
@@ -2590,7 +2188,6 @@ off64_t libcfile_file_seek_offset(
 	libcfile_internal_file_t *internal_file = NULL;
 	static char *function                   = "libcfile_file_seek_offset";
 	off64_t offset_remainder                = 0;
-	LARGE_INTEGER large_integer_offset      = LIBCFILE_LARGE_INTEGER_ZERO;
 	DWORD error_code                        = 0;
 	DWORD move_method                       = 0;
 
@@ -2607,7 +2204,7 @@ off64_t libcfile_file_seek_offset(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
+	if( internal_file->Handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -2668,62 +2265,35 @@ off64_t libcfile_file_seek_offset(
 	{
 		move_method = FILE_END;
 	}
-	/* SetFilePointerEx cannot be used in combination with FILE_FLAG_OVERLAPPED.
-	 */
-	if( internal_file->use_asynchronous_io == 0 )
+
+  if( SeekFileHandle(internal_file->Handle, offset, move_method) == 0 )
 	{
-#if defined( __BORLANDC__ ) && __BORLANDC__ <= 0x0520
-		large_integer_offset.QuadPart = (LONGLONG) offset;
-#else
-		large_integer_offset.LowPart  = (DWORD) ( 0x0ffffffffUL & offset );
-		large_integer_offset.HighPart = (LONG) ( offset >> 32 );
-#endif
+		error_code = GetLastFileHandleError();
 
-#if ( WINVER <= 0x0500 )
-		if( libcfile_SetFilePointerEx(
-		     internal_file->handle,
-		     large_integer_offset,
-		     &large_integer_offset,
-		     move_method ) == 0 )
-#else
-		if( SetFilePointerEx(
-		     internal_file->handle,
-		     large_integer_offset,
-		     &large_integer_offset,
-		     move_method ) == 0 )
-#endif
-		{
-			error_code = GetLastError();
+		libcerror_system_set_error(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 error_code,
+		 "%s: unable to seek offset in file.",
+		 function );
 
-			libcerror_system_set_error(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 error_code,
-			 "%s: unable to seek offset in file.",
-			 function );
-
-			return( -1 );
-		}
-#if defined( __BORLANDC__ ) && __BORLANDC__ <= 0x0520
-		offset = (off64_t) large_integer_offset.QuadPart;
-#else
-		offset = ( (off64_t) large_integer_offset.HighPart << 32 ) + large_integer_offset.LowPart;
-#endif
-
-		if( offset < 0 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_SEEK_FAILED,
-			 "%s: invalid offset: %" PRIi64 " returned.",
-			 function,
-			 offset );
-
-			return( -1 );
-		}
+		return( -1 );
 	}
+
+	if( offset < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: invalid offset: %" PRIi64 " returned.",
+		 function,
+		 offset );
+
+		return( -1 );
+	}
+
 	internal_file->current_offset = offset;
 
 	if( internal_file->block_size != 0 )
@@ -2847,6 +2417,7 @@ off64_t libcfile_file_seek_offset(
 
 #if defined( WINAPI )
 
+// Todo [e01 patch]: Do we need this?
 /* Resizes the file
  * This function uses the WINAPI function for Windows XP (0x0501) or later
  * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
@@ -2876,6 +2447,7 @@ int libcfile_file_resize(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
+  // Todo [e01 patch]: Patch or remove
 	if( internal_file->handle == INVALID_HANDLE_VALUE )
 	{
 		libcerror_error_set(
@@ -2912,6 +2484,7 @@ int libcfile_file_resize(
 	     &large_integer_offset,
 	     FILE_BEGIN ) == 0 )
 #else
+  // Todo [e01 patch]: Patch or remove
 	if( SetFilePointerEx(
 	     internal_file->handle,
 	     large_integer_offset,
@@ -2919,7 +2492,7 @@ int libcfile_file_resize(
 	     FILE_BEGIN ) == 0 )
 #endif
 	{
-		error_code = GetLastError();
+		error_code = GetLastFileHandleError();
 
 		libcerror_system_set_error(
 		 error,
@@ -2956,10 +2529,11 @@ int libcfile_file_resize(
 	     internal_file->handle ) == 0 )
 #else
 	if( SetEndOfFile(
+    // Todo [e01 patch]: Patch or remove
 	     internal_file->handle ) == 0 )
 #endif
 	{
-		error_code = GetLastError();
+		error_code = GetLastFileHandleError();
 
 		libcerror_system_set_error(
 		 error,
@@ -3091,11 +2665,7 @@ int libcfile_file_is_open(
 	}
 	internal_file = (libcfile_internal_file_t *) file;
 
-#if defined( WINAPI )
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
-#else
-	if( internal_file->descriptor == -1 )
-#endif
+	if( internal_file->Handle == NULL )
 	{
 		return( 0 );
 	}
@@ -3125,9 +2695,8 @@ int libcfile_file_get_offset(
 		return( -1 );
 	}
 	internal_file = (libcfile_internal_file_t *) file;
-
-#if defined( WINAPI )
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
+  
+	if( internal_file->Handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -3138,19 +2707,7 @@ int libcfile_file_get_offset(
 
 		return( -1 );
 	}
-#else
-	if( internal_file->descriptor == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing descriptor.",
-		 function );
 
-		return( -1 );
-	}
-#endif
 	if( offset == NULL )
 	{
 		libcerror_error_set(
@@ -3182,8 +2739,6 @@ GET_LENGTH_INFORMATION;
 #endif /* !defined( IOCTL_DISK_GET_LENGTH_INFO ) */
 
 /* Retrieves the size of the file
- * This function uses the WINAPI function for Windows XP (0x0501) or later
- * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
  * Returns 1 if successful or -1 on error
  */
 int libcfile_internal_file_get_size(
@@ -3211,7 +2766,7 @@ int libcfile_internal_file_get_size(
 
 		return( -1 );
 	}
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
+	if( internal_file->Handle == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -3233,136 +2788,8 @@ int libcfile_internal_file_get_size(
 
 		return( -1 );
 	}
-	result = libcfile_file_is_device(
-	          (libcfile_file_t *) internal_file,
-	          error );
 
-	if( result == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to determine if file is a device.",
-		 function );
-
-		return( -1 );
-	}
-	else if( result != 0 )
-	{
-		read_count = libcfile_internal_file_io_control_read_with_error_code(
-		              internal_file,
-		              IOCTL_DISK_GET_LENGTH_INFO,
-		              NULL,
-		              0,
-		              (uint8_t *) &length_information,
-		              sizeof( GET_LENGTH_INFORMATION ),
-		              &error_code,
-		              error );
-
-		if( read_count == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 "%s: unable to query device for: IOCTL_DISK_GET_LENGTH_INFO.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-
-			if( error_code == ERROR_NOT_SUPPORTED )
-			{
-				/* A floppy device does not support IOCTL_DISK_GET_LENGTH_INFO
-				 */
-				read_count = libcfile_internal_file_io_control_read_with_error_code(
-				              internal_file,
-				              IOCTL_DISK_GET_DRIVE_GEOMETRY,
-				              NULL,
-				              0,
-				              (uint8_t *) &disk_geometry,
-				              sizeof( DISK_GEOMETRY ),
-				              &error_code,
-				              error );
-
-				if( read_count == -1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-					 "%s: unable to query device for: IOCTL_DISK_GET_DRIVE_GEOMETRY.",
-					 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-					if( libcnotify_verbose != 0 )
-					{
-						if( ( error != NULL )
-						 && ( *error != NULL ) )
-						{
-							libcnotify_print_error_backtrace(
-							 *error );
-						}
-					}
-#endif
-					libcerror_error_free(
-					 error );
-				}
-				else
-				{
-					*size  = disk_geometry.Cylinders.QuadPart;
-					*size *= disk_geometry.TracksPerCylinder;
-					*size *= disk_geometry.SectorsPerTrack;
-					*size *= disk_geometry.BytesPerSector;
-				}
-			}
-		}
-		else
-		{
-			*size  = (size64_t) length_information.Length.HighPart << 32;
-			*size += (uint32_t) length_information.Length.LowPart;
-		}
-	}
-	else
-	{
-#if ( WINVER <= 0x0500 )
-		if( libcfile_GetFileSizeEx(
-		     internal_file->handle,
-		     &large_integer_size ) == 0 )
-#else
-		if( GetFileSizeEx(
-		     internal_file->handle,
-		     &large_integer_size ) == 0 )
-#endif
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to retrieve file size.",
-			 function );
-
-			return( -1 );
-		}
-#if defined( __BORLANDC__ ) && __BORLANDC__ <= 0x520
-		*size = (size64_t) large_integer_size.QuadPart;
-#else
-		*size  = (size64_t) large_integer_size.HighPart << 32;
-		*size += (uint32_t) large_integer_size.LowPart;
-#endif
-	}
+  *size = internal_file->size;
 	return( 1 );
 }
 
@@ -3767,161 +3194,9 @@ int libcfile_file_get_size(
 	return( 1 );
 }
 
-#if defined( WINAPI )
-
-/* Determines if a file is a device
- * This function uses the WINAPI function for Windows XP (0x0501) or later
- * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
- * Returns 1 if true, 0 if not or -1 on error
- */
-int libcfile_file_is_device(
-     libcfile_file_t *file,
-     libcerror_error_t **error )
-{
-	libcfile_internal_file_t *internal_file = NULL;
-	static char *function                   = "libcfile_file_is_device";
-	DWORD file_type                         = 0;
-	int result                              = 0;
-
-	if( file == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file.",
-		 function );
-
-		return( -1 );
-	}
-	internal_file = (libcfile_internal_file_t *) file;
-
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing handle.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO what about FILE_ATTRIBUTE_DEVICE using GetFileAttributes() */
-
-	/* Use the GetFileType function to rule out certain file types
-	 * like pipes, sockets, etc.
-	 */
-#if ( WINVER <= 0x0500 )
-	file_type = libcfile_GetFileType(
-	             internal_file->handle );
-#else
-	file_type = GetFileType(
-	             internal_file->handle );
-#endif
-
-	if( file_type == FILE_TYPE_UNKNOWN )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to determine file type.",
-		 function );
-
-		return( -1 );
-	}
-	else if( file_type == FILE_TYPE_DISK )
-	{
-		if( internal_file->is_device_filename )
-		{
-			result = 1;
-		}
-	}
-	return( result );
-}
-
-#elif defined( HAVE_FSTAT )
-
-/* Determines if a file is a device
- * This function uses the POSIX fstat function or equivalent
- * Returns 1 if true, 0 if not or -1 on error
- */
-int libcfile_file_is_device(
-     libcfile_file_t *file,
-     libcerror_error_t **error )
-{
-	struct stat file_statistics;
-
-	libcfile_internal_file_t *internal_file = NULL;
-	static char *function                   = "libcfile_file_is_device";
-	int result                              = 0;
-
-	if( file == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file.",
-		 function );
-
-		return( -1 );
-	}
-	internal_file = (libcfile_internal_file_t *) file;
-
-	if( internal_file->descriptor == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid file - missing descriptor.",
-		 function );
-
-		return( -1 );
-	}
-	if( memory_set(
-	     &file_statistics,
-	     0,
-	     sizeof( struct stat ) ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-		 "%s: unable to clear file statistics.",
-		 function );
-
-		return( -1 );
-	}
-	if( fstat(
-	     internal_file->descriptor,
-	     &file_statistics ) != 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve file statistics.",
-		 function );
-
-		return( -1 );
-	}
-	if( S_ISBLK( file_statistics.st_mode )
-	 || S_ISCHR( file_statistics.st_mode ) )
-	{
-		result = 1;
-	}
-	return( result );
-}
-
-#else
-#error Missing file is device function
-#endif
-
 #if defined( HAVE_IOCTL ) || defined( WINAPI )
 
+// Todo [e01 patch]: Do we need this?
 /* Read data from a device file using IO control
  * This function uses the POSIX ioctl function or WINAPI DeviceIoControl
  * Returns the number of bytes read if successful or -1 on error
@@ -3954,6 +3229,7 @@ ssize_t libcfile_internal_file_io_control_read_with_error_code(
 		return( -1 );
 	}
 #if defined( WINAPI )
+  // Todo [e01 patch]: Patch or remove
 	if( internal_file->handle == INVALID_HANDLE_VALUE )
 	{
 		libcerror_error_set(
@@ -4054,6 +3330,7 @@ ssize_t libcfile_internal_file_io_control_read_with_error_code(
 		return( -1 );
 	}
 #if defined( WINAPI )
+  // Todo [e01 patch]: Patch or remove
 	if( DeviceIoControl(
 	     internal_file->handle,
 	     (DWORD) control_code,
@@ -4064,7 +3341,7 @@ ssize_t libcfile_internal_file_io_control_read_with_error_code(
 	     &response_count,
 	     NULL ) == 0 )
 	{
-		*error_code = (uint32_t) GetLastError();
+		*error_code = GetLastFileHandleError();
 
 		libcerror_system_set_error(
 		 error,
@@ -4128,6 +3405,7 @@ ssize_t libcfile_internal_file_io_control_read_with_error_code(
 #error Missing file IO control with data function
 #endif
 
+// Todo [e01 patch]: Do we need this?
 /* Read data from a device file using IO control
  * Returns the number of bytes read if successful or -1 on error
  */
@@ -4182,6 +3460,7 @@ ssize_t libcfile_file_io_control_read(
 	return( read_count );
 }
 
+// Todo [e01 patch]: Do we need this?
 /* Read data from a device file using IO control
  * Returns the number of bytes read if successful or -1 on error
  */
@@ -4254,6 +3533,7 @@ ssize_t libcfile_file_io_control_read_with_error_code(
 
 #endif /* #if defined( HAVE_POSIX_FADVISE ) && !defined( WINAPI ) */
 
+ // Todo [e01 patch]: Do we need this?
 /* Sets the expected access behavior so the system can optimize the access
  * Returns 1 if successful or -1 on error
  */
@@ -4284,6 +3564,7 @@ int libcfile_file_set_access_behavior(
 	internal_file = (libcfile_internal_file_t *) file;
 
 #if defined( WINAPI )
+  // Todo [e01 patch]: Patch or remove
 	if( internal_file->handle == INVALID_HANDLE_VALUE )
 	{
 		libcerror_error_set(
@@ -4450,6 +3731,7 @@ int libcfile_internal_file_set_block_size(
 	return( 1 );
 }
 
+// Todo [e01 patch]: Do we need this?
 /* Sets the block size for the read and seek operations
  * A block size of 0 represents no block-based operations
  * The total size must be a multitude of block size
@@ -4488,6 +3770,7 @@ int libcfile_file_set_block_size(
 		return( -1 );
 	}
 #if defined( WINAPI )
+  // Todo [e01 patch]: Patch or remove
 	if( internal_file->handle == INVALID_HANDLE_VALUE )
 	{
 		libcerror_error_set(

@@ -28,6 +28,7 @@
 #include "libcfile_extern.h"
 #include "libcfile_libcerror.h"
 #include "libcfile_types.h"
+#include "FileStreamInterface.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -37,25 +38,10 @@ typedef struct libcfile_internal_file libcfile_internal_file_t;
 
 struct libcfile_internal_file
 {
-#if defined( WINAPI )
-
-	/* The (file) handle
-	 */
-	HANDLE handle;
-
-	/* Value to indicate the filename indicate this is a device file
-	 */
-	uint8_t is_device_filename;
-
-	/* Value to indicate asynchronous IO should be used.
-	 */
-	uint8_t use_asynchronous_io;
-#else
+  FileStreamHandle Handle;
 	/* The (file) descriptor
 	 */
 	int descriptor;
-
-#endif /* defined( WINAPI ) */
 
 	/* The access flags
 	 */
@@ -69,6 +55,7 @@ struct libcfile_internal_file
 	 */
 	off64_t current_offset;
 
+  // Todo [e01 patch]: Do we need this?
 	/* The block size
 	 */
 	size_t block_size;
