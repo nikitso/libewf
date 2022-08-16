@@ -39,37 +39,37 @@ typedef struct libcfile_internal_file libcfile_internal_file_t;
 struct libcfile_internal_file
 {
   FileStreamHandle Handle;
-	/* The (file) descriptor
-	 */
-	int descriptor;
+  /* The (file) descriptor
+   */
+  int descriptor;
 
-	/* The access flags
-	 */
-	int access_flags;
+  /* The access flags
+   */
+  int access_flags;
 
-	/* The size
-	 */
-	size64_t size;
+  /* The size
+   */
+  size64_t size;
 
-	/* The current offset
-	 */
-	off64_t current_offset;
+  /* The current offset
+   */
+  off64_t current_offset;
 
-	/* The block size
-	 */
-	size_t block_size;
+  /* The block size
+   */
+  size_t block_size;
 
-	/* The block data
-	 */
-	uint8_t *block_data;
+  /* The block data
+   */
+  uint8_t *block_data;
 
-	/* The block data offset
-	 */
-	size_t block_data_offset;
+  /* The block data offset
+   */
+  size_t block_data_offset;
 
-	/* The block data size
-	 */
-	size_t block_data_size;
+  /* The block data size
+   */
+  size_t block_data_size;
 };
 
 LIBCFILE_EXTERN \
