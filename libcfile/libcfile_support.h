@@ -23,7 +23,6 @@
 #define _LIBCFILE_SUPPORT_H
 
 #include <common.h>
-#include <types.h>
 
 #include "libcfile_extern.h"
 #include "libcfile_libcerror.h"
@@ -60,32 +59,6 @@ int libcfile_file_exists(
 LIBCFILE_EXTERN \
 int libcfile_file_exists_wide(
      const wchar_t *filename,
-     libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_with_error_code(
-     const char *filename,
-     uint32_t *error_code,
-     libcerror_error_t **error );
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_wide(
-     const wchar_t *filename,
-     libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_wide_with_error_code(
-     const wchar_t *filename,
-     uint32_t *error_code,
      libcerror_error_t **error );
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */

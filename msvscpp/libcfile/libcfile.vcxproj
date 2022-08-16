@@ -74,7 +74,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\include;..\..\common;..\..\libcerror;..\..\libclocale;..\..\libcnotify;..\..\libuna;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\common;..\..\libcerror;..\..\libclocale;..\..\libcnotify;..\..\libuna;..\..\..\Utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level4</WarningLevel>
@@ -106,7 +106,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='VSDebug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\common;..\..\libcerror;..\..\libclocale;..\..\libcnotify;..\..\libuna;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\include;..\..\common;..\..\libcerror;..\..\libclocale;..\..\libcnotify;..\..\libuna;..\..\..\Utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;HAVE_LOCAL_LIBCERROR;HAVE_LOCAL_LIBCLOCALE;HAVE_LOCAL_LIBCNOTIFY;HAVE_LOCAL_LIBUNA;HAVE_LOCAL_LIBCFILE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <SmallerTypeCheck>true</SmallerTypeCheck>
@@ -148,7 +148,6 @@
     <ClCompile Include="..\..\libcfile\libcfile_notify.c" />
     <ClCompile Include="..\..\libcfile\libcfile_support.c" />
     <ClCompile Include="..\..\libcfile\libcfile_system_string.c" />
-    <ClCompile Include="..\..\libcfile\libcfile_winapi.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libcfile\libcfile_definitions.h" />
@@ -164,7 +163,6 @@
     <ClInclude Include="..\..\libcfile\libcfile_system_string.h" />
     <ClInclude Include="..\..\libcfile\libcfile_types.h" />
     <ClInclude Include="..\..\libcfile\libcfile_unused.h" />
-    <ClInclude Include="..\..\libcfile\libcfile_winapi.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libcerror\libcerror.vcxproj">

@@ -55,7 +55,6 @@ struct libcfile_internal_file
 	 */
 	off64_t current_offset;
 
-  // Todo [e01 patch]: Do we need this?
 	/* The block size
 	 */
 	size_t block_size;
@@ -129,18 +128,6 @@ ssize_t libcfile_file_read_buffer(
          size_t size,
          libcerror_error_t **error );
 
-#if defined( WINAPI )
-
-ssize_t libcfile_internal_file_read_buffer_at_offset_with_error_code(
-         libcfile_internal_file_t *internal_file,
-         off64_t current_offset,
-         uint8_t *buffer,
-         size_t size,
-         uint32_t *error_code,
-         libcerror_error_t **error );
-
-#endif /* defined( WINAPI ) */
-
 LIBCFILE_EXTERN \
 ssize_t libcfile_file_read_buffer_with_error_code(
          libcfile_file_t *file,
@@ -170,12 +157,6 @@ off64_t libcfile_file_seek_offset(
          off64_t offset,
          int whence,
          libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_resize(
-     libcfile_file_t *file,
-     size64_t size,
-     libcerror_error_t **error );
 
 LIBCFILE_EXTERN \
 int libcfile_file_is_open(
@@ -213,44 +194,6 @@ ssize_t libcfile_internal_file_io_control_read_with_error_code(
          size_t data_size,
          uint32_t *error_code,
          libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-ssize_t libcfile_file_io_control_read(
-         libcfile_file_t *file,
-         uint32_t control_code,
-         uint8_t *control_data,
-         size_t control_data_size,
-         uint8_t *data,
-         size_t data_size,
-         libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-ssize_t libcfile_file_io_control_read_with_error_code(
-         libcfile_file_t *file,
-         uint32_t control_code,
-         uint8_t *control_data,
-         size_t control_data_size,
-         uint8_t *data,
-         size_t data_size,
-         uint32_t *error_code,
-         libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_set_access_behavior(
-     libcfile_file_t *file,
-     int access_behavior,
-     libcerror_error_t **error );
-
-int libcfile_internal_file_set_block_size(
-     libcfile_internal_file_t *internal_file,
-     size_t block_size,
-     libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_set_block_size(
-     libcfile_file_t *file,
-     size_t block_size,
-     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }
