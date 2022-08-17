@@ -92,7 +92,7 @@ int libcfile_file_initialize(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_initialize";
+  const char *function                   = "libcfile_file_initialize";
 
   if( file == NULL )
   {
@@ -168,7 +168,7 @@ int libcfile_file_free(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_free";
+  const char *function                   = "libcfile_file_free";
   int result                              = 1;
 
   if( file == NULL )
@@ -219,7 +219,7 @@ int libcfile_file_open(
      int access_flags,
      libcerror_error_t **error )
 {
-  static char *function = "libcfile_file_open";
+  const char *function = "libcfile_file_open";
   uint32_t error_code   = 0;
 
   if( libcfile_file_open_with_error_code(
@@ -254,7 +254,7 @@ int libcfile_file_open_with_error_code(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_open_with_error_code";
+  const char *function                   = "libcfile_file_open_with_error_code";
 
   if( file == NULL )
   {
@@ -383,7 +383,7 @@ int libcfile_file_open_with_error_code(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_open_with_error_code";
+  const char *function                   = "libcfile_file_open_with_error_code";
   int file_io_flags                       = 0;
 
   if( file == NULL )
@@ -555,7 +555,7 @@ int libcfile_file_open_wide(
      int access_flags,
      libcerror_error_t **error )
 {
-  static char *function = "libcfile_file_open_wide";
+  const char *function = "libcfile_file_open_wide";
   uint32_t error_code   = 0;
 
   if( libcfile_file_open_wide_with_error_code(
@@ -590,7 +590,7 @@ int libcfile_file_open_wide_with_error_code(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_open_wide_with_error_code";
+  const char *function                   = "libcfile_file_open_wide_with_error_code";
 
   if( file == NULL )
   {
@@ -639,7 +639,7 @@ int libcfile_file_open_wide_with_error_code(
 
     return( -1 );
   }
-  internal_file->Handle = OpenFileHandle(filename);
+  internal_file->Handle = OpenFileHandleWide(filename);
   if( internal_file->Handle == NULL )
   {
     *error_code = GetLastFileHandleError();
@@ -718,7 +718,7 @@ int libcfile_file_open_wide_with_error_code(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_open_wide_with_error_code";
+  const char *function                   = "libcfile_file_open_wide_with_error_code";
   char *narrow_filename                   = NULL;
   size_t filename_size                    = 0;
   size_t narrow_filename_size             = 0;
@@ -953,7 +953,7 @@ int libcfile_file_close(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_close";
+  const char *function                   = "libcfile_file_close";
   DWORD error_code                        = 0;
   BOOL result                             = FALSE;
 
@@ -972,7 +972,8 @@ int libcfile_file_close(
   internal_file = (libcfile_internal_file_t *) file;
   if( internal_file->Handle != NULL )
   {
-    result = CloseFileHandle(internal_file->Handle);
+    FileStreamHandle handle = static_cast<FileStreamHandle>(internal_file->Handle);
+    result = CloseFileHandle(handle);
     if( result == 0 )
     {
       error_code = GetLastFileHandleError();
@@ -1007,7 +1008,7 @@ int libcfile_file_close(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_close";
+  const char *function                   = "libcfile_file_close";
 
   if( file == NULL )
   {
@@ -1070,12 +1071,12 @@ int libcfile_file_close(
  * Returns the number of bytes read if successful, or -1 on error
  */
 ssize_t libcfile_file_read_buffer(
-         FileStreamHandle *file,
+         libcfile_file_t*file,
          uint8_t *buffer,
          size_t size,
          libcerror_error_t **error )
 {
-  static char *function = "libcfile_file_read_buffer";
+  const char *function = "libcfile_file_read_buffer";
   ssize_t read_count    = 0;
   uint32_t error_code   = 0;
   
@@ -1112,7 +1113,7 @@ ssize_t libcfile_internal_file_read_buffer_at_offset_with_error_code(
          uint32_t *error_code,
          libcerror_error_t **error )
 {
-  static char *function  = "libcfile_internal_file_read_buffer_at_offset_with_error_code";
+  const char *function  = "libcfile_internal_file_read_buffer_at_offset_with_error_code";
   DWORD read_count       = 0;
   BOOL result            = FALSE;
 
@@ -1166,7 +1167,8 @@ ssize_t libcfile_internal_file_read_buffer_at_offset_with_error_code(
     return( -1 );
   }
 
-  result = ReadFileHandle(internal_file->Handle, buffer, size, &read_count);
+  FileStreamHandle handle = static_cast<FileStreamHandle>(internal_file->Handle);
+  result = ReadFileHandle(handle, buffer, size, &read_count);
   if( result == 0 )
   {
     *error_code = GetLastFileHandleError();
@@ -1196,7 +1198,7 @@ ssize_t libcfile_file_read_buffer_with_error_code(
          libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_read_buffer_with_error_code";
+  const char *function                   = "libcfile_file_read_buffer_with_error_code";
   size_t buffer_offset                    = 0;
   size_t read_size                        = 0;
   ssize_t read_count                      = 0;
@@ -1336,7 +1338,7 @@ ssize_t libcfile_file_read_buffer_with_error_code(
          libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_read_buffer_with_error_code";
+  const char *function                   = "libcfile_file_read_buffer_with_error_code";
   size_t buffer_offset                    = 0;
   size_t read_size                        = 0;
   size_t read_size_remainder              = 0;
@@ -1630,29 +1632,7 @@ ssize_t libcfile_file_write_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-  static char *function = "libcfile_file_write_buffer";
-  ssize_t write_count   = 0;
-  uint32_t error_code   = 0;
-
-  write_count = libcfile_file_write_buffer_with_error_code(
-                 file,
-                 buffer,
-                 size,
-                 &error_code,
-                 error );
-
-  if( write_count == -1 )
-  {
-    libcerror_error_set(
-     error,
-     LIBCERROR_ERROR_DOMAIN_IO,
-     LIBCERROR_IO_ERROR_WRITE_FAILED,
-     "%s: unable to write to file.",
-     function );
-
-    return( -1 );
-  }
-  return( write_count );
+  return -1;
 }
 
 #if defined( WINAPI )
@@ -1667,7 +1647,7 @@ off64_t libcfile_file_seek_offset(
          libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_seek_offset";
+  const char *function                   = "libcfile_file_seek_offset";
   DWORD error_code                        = 0;
   DWORD move_method                       = 0;
 
@@ -1733,7 +1713,8 @@ off64_t libcfile_file_seek_offset(
     move_method = FILE_END;
   }
 
-  if( SeekFileHandle(internal_file->Handle, offset, move_method) == 0 )
+  FileStreamHandle handle = static_cast<FileStreamHandle>(internal_file->Handle);
+  if( SeekFileHandle(handle, offset, move_method) == 0 )
   {
     error_code = GetLastFileHandleError();
 
@@ -1778,7 +1759,7 @@ off64_t libcfile_file_seek_offset(
          libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_seek_offset";
+  const char *function                   = "libcfile_file_seek_offset";
   off64_t offset_remainder                = 0;
 
   if( file == NULL )
@@ -1883,7 +1864,7 @@ int libcfile_file_is_open(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_is_open";
+  const char *function                   = "libcfile_file_is_open";
 
   if( file == NULL )
   {
@@ -1914,7 +1895,7 @@ int libcfile_file_get_offset(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_get_offset";
+  const char *function                   = "libcfile_file_get_offset";
 
   if( file == NULL )
   {
@@ -1979,7 +1960,7 @@ int libcfile_internal_file_get_size(
      size64_t *size,
      libcerror_error_t **error )
 {
-  static char *function            = "libcfile_internal_file_get_size";
+  const char *function            = "libcfile_internal_file_get_size";
 
   if( internal_file == NULL )
   {
@@ -2034,7 +2015,7 @@ int libcfile_internal_file_get_size(
 {
   struct stat file_statistics;
 
-  static char *function     = "libcfile_internal_file_get_size";
+  const char *function     = "libcfile_internal_file_get_size";
   size64_t safe_size        = 0;
   ssize_t read_count        = 0;
   off64_t current_offset    = 0;
@@ -2391,7 +2372,7 @@ int libcfile_file_get_size(
      libcerror_error_t **error )
 {
   libcfile_internal_file_t *internal_file = NULL;
-  static char *function                   = "libcfile_file_get_size";
+  const char *function                   = "libcfile_file_get_size";
 
   if( file == NULL )
   {
@@ -2438,7 +2419,7 @@ ssize_t libcfile_internal_file_io_control_read_with_error_code(
          uint32_t *error_code,
          libcerror_error_t **error )
 {
-  static char *function = "libcfile_internal_file_io_control_read_with_error_code";
+  const char *function = "libcfile_internal_file_io_control_read_with_error_code";
   
   if( internal_file == NULL )
   {

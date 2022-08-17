@@ -44,7 +44,7 @@ int libcfile_system_string_size_to_narrow_string(
      size_t *narrow_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_size_to_narrow_string";
+	const char *function = "libcfile_system_string_size_to_narrow_string";
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
@@ -147,7 +147,7 @@ int libcfile_system_string_copy_to_narrow_string(
      size_t narrow_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_copy_to_narrow_string";
+	const char *function = "libcfile_system_string_copy_to_narrow_string";
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
@@ -289,7 +289,7 @@ int libcfile_system_string_size_from_narrow_string(
      size_t *system_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_size_from_narrow_string";
+	const char *function = "libcfile_system_string_size_from_narrow_string";
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
@@ -392,7 +392,7 @@ int libcfile_system_string_copy_from_narrow_string(
      size_t narrow_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_copy_from_narrow_string";
+	const char *function = "libcfile_system_string_copy_from_narrow_string";
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
@@ -536,7 +536,7 @@ int libcfile_system_string_size_to_wide_string(
      size_t *wide_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_size_to_wide_string";
+	const char *function = "libcfile_system_string_size_to_wide_string";
 
 #if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
@@ -638,7 +638,7 @@ int libcfile_system_string_copy_to_wide_string(
      size_t wide_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_copy_to_wide_string";
+	const char *function = "libcfile_system_string_copy_to_wide_string";
 
 #if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
@@ -779,7 +779,7 @@ int libcfile_system_string_size_from_wide_string(
      size_t *system_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_size_from_wide_string";
+	const char *function = "libcfile_system_string_size_from_wide_string";
 
 #if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;
@@ -881,7 +881,7 @@ int libcfile_system_string_copy_from_wide_string(
      size_t wide_string_size,
      libcerror_error_t **error )
 {
-	static char *function = "libcfile_system_string_copy_from_wide_string";
+	const char *function = "libcfile_system_string_copy_from_wide_string";
 
 #if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result            = 0;

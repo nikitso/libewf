@@ -28,7 +28,6 @@
 #include "libcfile_extern.h"
 #include "libcfile_libcerror.h"
 #include "libcfile_types.h"
-#include "FileStreamInterface.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -38,7 +37,7 @@ typedef struct libcfile_internal_file libcfile_internal_file_t;
 
 struct libcfile_internal_file
 {
-  FileStreamHandle Handle;
+  void* Handle;
   /* The (file) descriptor
    */
   int descriptor;
@@ -141,14 +140,6 @@ ssize_t libcfile_file_write_buffer(
          libcfile_file_t *file,
          const uint8_t *buffer,
          size_t size,
-         libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-ssize_t libcfile_file_write_buffer_with_error_code(
-         libcfile_file_t *file,
-         const uint8_t *buffer,
-         size_t size,
-         uint32_t *error_code,
          libcerror_error_t **error );
 
 LIBCFILE_EXTERN \

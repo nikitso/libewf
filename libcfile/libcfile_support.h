@@ -56,10 +56,14 @@ int libcfile_file_exists(
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
+#if defined( HAVE_STAT )
+
 LIBCFILE_EXTERN \
 int libcfile_file_exists_wide(
      const wchar_t *filename,
      libcerror_error_t **error );
+
+#endif /* defined( HAVE_STAT ) */
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 

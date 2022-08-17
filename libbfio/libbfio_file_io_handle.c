@@ -1079,7 +1079,7 @@ int libbfio_file_io_handle_exists(
 
 		return( -1 );
 	}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined(HAVE_WIDE_SYSTEM_CHARACTER) && (HAVE_STAT)
 	result = libcfile_file_exists_wide(
 	          file_io_handle->name,
 	          error );

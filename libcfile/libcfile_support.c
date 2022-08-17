@@ -118,7 +118,7 @@ int libcfile_file_exists(
      const char *filename,
      libcerror_error_t **error )
 {
-  static char *function  = "libcfile_file_exists";
+  const char *function  = "libcfile_file_exists";
   DWORD error_code       = 0;
   FileStreamHandle handle = NULL;
   int result             = 1;
