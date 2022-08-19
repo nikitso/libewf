@@ -40,10 +40,11 @@ int libbfio_file_pool_open(
      int entry,
      const char *name,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
-	static char *function            = "libbfio_file_pool_open";
+	const char *function             = "libbfio_file_pool_open";
 	size_t name_length               = 0;
 
 	if( pool == NULL )
@@ -70,6 +71,7 @@ int libbfio_file_pool_open(
 	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -152,10 +154,11 @@ int libbfio_file_pool_open_wide(
      int entry,
      const wchar_t *name,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
-	static char *function            = "libbfio_file_pool_open_wide";
+	const char *function             = "libbfio_file_pool_open_wide";
 	size_t name_length               = 0;
 
 	if( pool == NULL )
@@ -182,6 +185,7 @@ int libbfio_file_pool_open_wide(
 	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -264,10 +268,11 @@ int libbfio_file_pool_append_handles_for_names(
      char * const names[],
      int number_of_names,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
-	static char *function            = "libbfio_file_pool_append_handles_for_names";
+	const char *function             = "libbfio_file_pool_append_handles_for_names";
 	size_t name_length               = 0;
 	int pool_entry                   = 0;
 	int name_iterator                = 0;
@@ -314,6 +319,7 @@ int libbfio_file_pool_append_handles_for_names(
 
 		if( libbfio_file_initialize(
 		     &file_io_handle,
+         fileHandle,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -382,10 +388,11 @@ int libbfio_file_pool_append_handles_for_names_wide(
      wchar_t * const names[],
      int number_of_names,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
-	static char *function            = "libbfio_file_pool_append_handles_for_names_wide";
+	const char *function             = "libbfio_file_pool_append_handles_for_names_wide";
 	size_t name_length               = 0;
 	int pool_entry                   = 0;
 	int name_iterator                = 0;
@@ -432,6 +439,7 @@ int libbfio_file_pool_append_handles_for_names_wide(
 
 		if( libbfio_file_initialize(
 		     &file_io_handle,
+         fileHandle,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

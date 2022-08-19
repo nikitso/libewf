@@ -43,7 +43,7 @@ int libbfio_memory_range_initialize(
      libcerror_error_t **error )
 {
 	libbfio_memory_range_io_handle_t *memory_range_io_handle = NULL;
-	static char *function                                    = "libbfio_memory_range_initialize";
+	const char *function                                     = "libbfio_memory_range_initialize";
 
 	if( handle == NULL )
 	{
@@ -127,7 +127,7 @@ int libbfio_memory_range_get(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_memory_range_get";
+	const char *function                       = "libbfio_memory_range_get";
 
 	if( handle == NULL )
 	{
@@ -170,7 +170,7 @@ int libbfio_memory_range_set(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_memory_range_set";
+	const char *function                       = "libbfio_memory_range_set";
 
 	if( handle == NULL )
 	{

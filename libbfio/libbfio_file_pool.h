@@ -39,6 +39,7 @@ int libbfio_file_pool_open(
      int entry,
      const char *name,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -49,6 +50,7 @@ int libbfio_file_pool_open_wide(
      int entry,
      const wchar_t *name,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
@@ -59,6 +61,7 @@ int libbfio_file_pool_append_handles_for_names(
      char * const names[],
      int number_of_names,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -69,6 +72,7 @@ int libbfio_file_pool_append_handles_for_names_wide(
      wchar_t * const names[],
      int number_of_names,
      int access_flags,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */

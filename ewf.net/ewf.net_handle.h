@@ -113,13 +113,14 @@ public ref class Handle sealed
 		static int GetAccessFlagsWrite( void );
 		static int GetAccessFlagsWriteResume( void );
 
-		static bool CheckFileSignature( System::String^ filename );
+		static bool CheckFileSignature( System::String^ filename, IntPtr^ fileHandle );
 
 		static array<System::String^>^ Glob( System::String^ filename );
 
 		Handle^ Clone( void );
 
 		void Open( array<System::String^>^ filenames,
+               array<IntPtr>^ fileStreams,
 		           int access_flags );
 
 		void Close( void );

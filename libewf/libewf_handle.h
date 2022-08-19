@@ -170,6 +170,7 @@ LIBEWF_EXTERN \
 int libewf_handle_open(
      libewf_handle_t *handle,
      char * const filenames[],
+     libewf_FileHandle_t * const fileHandles[],
      int number_of_filenames,
      int access_flags,
      libcerror_error_t **error );
@@ -180,6 +181,7 @@ LIBEWF_EXTERN \
 int libewf_handle_open_wide(
      libewf_handle_t *handle,
      wchar_t * const filenames[],
+     libewf_FileHandle_t * const fileHandles[],
      int number_of_filenames,
      int access_flags,
      libcerror_error_t **error );

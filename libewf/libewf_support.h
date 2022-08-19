@@ -70,6 +70,7 @@ int libewf_set_codepage(
 LIBEWF_EXTERN \
 int libewf_check_file_signature(
      const char *filename,
+     libewf_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
@@ -77,6 +78,7 @@ int libewf_check_file_signature(
 LIBEWF_EXTERN \
 int libewf_check_file_signature_wide(
      const wchar_t *filename,
+     libewf_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */

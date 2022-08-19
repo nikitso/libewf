@@ -37,10 +37,11 @@
  */
 int libbfio_file_initialize(
      libbfio_handle_t **handle,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_file_io_handle_t *file_io_handle = NULL;
-	static char *function                    = "libbfio_file_initialize";
+	const char *function                     = "libbfio_file_initialize";
 
 	if( handle == NULL )
 	{
@@ -64,8 +65,20 @@ int libbfio_file_initialize(
 
 		return( -1 );
 	}
+  if (fileHandle == NULL)
+  {
+    libcerror_error_set(
+      error,
+      LIBCERROR_ERROR_DOMAIN_RUNTIME,
+      LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+      "%s: file stream is not passed.",
+      function);
+
+    return(-1);
+  }
 	if( libbfio_file_io_handle_initialize(
 	     &file_io_handle,
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -124,7 +137,7 @@ int libbfio_file_get_name_size(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_get_name_size";
+	const char *function                       = "libbfio_file_get_name_size";
 
 	if( handle == NULL )
 	{
@@ -167,7 +180,7 @@ int libbfio_file_get_name(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_get_name";
+	const char *function                       = "libbfio_file_get_name";
 
 	if( handle == NULL )
 	{
@@ -211,7 +224,7 @@ int libbfio_file_set_name(
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
 	char *full_name                            = NULL;
-	static char *function                      = "libbfio_file_set_name";
+	const char *function                       = "libbfio_file_set_name";
 	size_t full_name_size                      = 0;
 
 	if( handle == NULL )
@@ -288,7 +301,7 @@ int libbfio_file_get_name_size_wide(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_get_name_size_wide";
+	const char *function                       = "libbfio_file_get_name_size_wide";
 
 	if( handle == NULL )
 	{
@@ -331,7 +344,7 @@ int libbfio_file_get_name_wide(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_get_name_wide";
+	const char *function                       = "libbfio_file_get_name_wide";
 
 	if( handle == NULL )
 	{
@@ -375,7 +388,7 @@ int libbfio_file_set_name_wide(
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
 	wchar_t *full_name                         = NULL;
-	static char *function                      = "libbfio_file_set_name_wide";
+	const char *function                       = "libbfio_file_set_name_wide";
 	size_t full_name_size                      = 0;
 
 	if( handle == NULL )

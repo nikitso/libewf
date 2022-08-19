@@ -36,6 +36,7 @@ extern "C" {
 LIBBFIO_EXTERN \
 int libbfio_file_initialize(
      libbfio_handle_t **handle,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 LIBBFIO_EXTERN \

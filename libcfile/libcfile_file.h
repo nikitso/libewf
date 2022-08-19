@@ -28,6 +28,7 @@
 #include "libcfile_extern.h"
 #include "libcfile_libcerror.h"
 #include "libcfile_types.h"
+#include "FileHandleApi.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -37,7 +38,7 @@ typedef struct libcfile_internal_file libcfile_internal_file_t;
 
 struct libcfile_internal_file
 {
-  void* Handle;
+  FileStreamHandle Handle;
   /* The (file) descriptor
    */
   int descriptor;
@@ -74,6 +75,7 @@ struct libcfile_internal_file
 LIBCFILE_EXTERN \
 int libcfile_file_initialize(
      libcfile_file_t **file,
+     libcfile_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 LIBCFILE_EXTERN \

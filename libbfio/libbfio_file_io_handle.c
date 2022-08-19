@@ -38,9 +38,10 @@
  */
 int libbfio_file_io_handle_initialize(
      libbfio_file_io_handle_t **file_io_handle,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_initialize";
+	const char *function  = "libbfio_file_io_handle_initialize";
 
 	if( file_io_handle == NULL )
 	{
@@ -94,6 +95,7 @@ int libbfio_file_io_handle_initialize(
 	}
 	if( libcfile_file_initialize(
 	     &( ( *file_io_handle )->file ),
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -125,7 +127,7 @@ int libbfio_file_io_handle_free(
      libbfio_file_io_handle_t **file_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_free";
+	const char *function  = "libbfio_file_io_handle_free";
 	int result            = 1;
 
 	if( file_io_handle == NULL )
@@ -175,7 +177,15 @@ int libbfio_file_io_handle_clone(
      libbfio_file_io_handle_t *source_file_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_clone";
+	const char *function  = "libbfio_file_io_handle_clone";
+
+  libcerror_error_set(
+    error,
+    LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+    LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+    "%s: cloning is not supported.",
+    function);
+  return -1;
 
 	if( destination_file_io_handle == NULL )
 	{
@@ -207,6 +217,7 @@ int libbfio_file_io_handle_clone(
 	}
 	if( libbfio_file_io_handle_initialize(
 	     destination_file_io_handle,
+       nullptr,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -309,7 +320,7 @@ int libbfio_file_io_handle_get_name_size(
      size_t *name_size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_get_name_size";
+	const char *function  = "libbfio_file_io_handle_get_name_size";
 
 	if( file_io_handle == NULL )
 	{
@@ -350,7 +361,7 @@ int libbfio_file_io_handle_get_name(
      size_t name_size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_get_name";
+	const char *function  = "libbfio_file_io_handle_get_name";
 
 	if( file_io_handle == NULL )
 	{
@@ -391,7 +402,7 @@ int libbfio_file_io_handle_set_name(
      size_t name_length,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_set_name";
+	const char *function  = "libbfio_file_io_handle_set_name";
 	int result            = 0;
 
 	if( file_io_handle == NULL )
@@ -543,7 +554,7 @@ int libbfio_file_io_handle_get_name_size_wide(
      size_t *name_size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_get_name_size_wide";
+	const char *function  = "libbfio_file_io_handle_get_name_size_wide";
 
 	if( file_io_handle == NULL )
 	{
@@ -584,7 +595,7 @@ int libbfio_file_io_handle_get_name_wide(
      size_t name_size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_get_name_wide";
+	const char *function  = "libbfio_file_io_handle_get_name_wide";
 
 	if( file_io_handle == NULL )
 	{
@@ -625,7 +636,7 @@ int libbfio_file_io_handle_set_name_wide(
      size_t name_length,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_set_name_wide";
+	const char *function  = "libbfio_file_io_handle_set_name_wide";
 	int result            = 0;
 
 	if( file_io_handle == NULL )
@@ -776,7 +787,7 @@ int libbfio_file_io_handle_open(
      int access_flags,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_io_handle_open";
+	const char *function  = "libbfio_file_io_handle_open";
 	int result            = 0;
 
 	if( file_io_handle == NULL )
@@ -838,7 +849,7 @@ int libbfio_file_io_handle_close(
      libbfio_file_io_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_close";
+	const char *function  = "libbfio_file_close";
 
 	if( file_io_handle == NULL )
 	{
@@ -890,7 +901,7 @@ ssize_t libbfio_file_io_handle_read_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_read_buffer";
+	const char *function  = "libbfio_file_read_buffer";
 	ssize_t read_count    = 0;
 
 	if( file_io_handle == NULL )
@@ -945,7 +956,7 @@ ssize_t libbfio_file_io_handle_write_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_write_buffer";
+	const char *function  = "libbfio_file_write_buffer";
 	ssize_t write_count   = 0;
 
 	if( file_io_handle == NULL )
@@ -1000,7 +1011,7 @@ off64_t libbfio_file_io_handle_seek_offset(
          int whence,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_seek_offset";
+	const char *function  = "libbfio_file_seek_offset";
 	off64_t seek_offset   = 0;
 
 	if( file_io_handle == NULL )
@@ -1054,7 +1065,7 @@ int libbfio_file_io_handle_exists(
      libbfio_file_io_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_exists";
+	const char *function  = "libbfio_file_exists";
 	int result            = 0;
 
 	if( file_io_handle == NULL )
@@ -1079,14 +1090,12 @@ int libbfio_file_io_handle_exists(
 
 		return( -1 );
 	}
-#if defined(HAVE_WIDE_SYSTEM_CHARACTER) && (HAVE_STAT)
-	result = libcfile_file_exists_wide(
-	          file_io_handle->name,
-	          error );
+
+  libcfile_internal_file_t* fileHandle = reinterpret_cast<libcfile_internal_file_t*>(file_io_handle->file);
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libcfile_file_exists_wide(fileHandle->Handle, file_io_handle->name, error);
 #else
-	result = libcfile_file_exists(
-	          file_io_handle->name,
-	          error );
+	result = libcfile_file_exists(handle->Handle, file_io_handle->name, error);
 #endif
 	if( result == -1 )
 	{
@@ -1110,7 +1119,7 @@ int libbfio_file_io_handle_is_open(
      libbfio_file_io_handle_t *file_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_is_open";
+	const char *function  = "libbfio_file_is_open";
 	int result            = 0;
 
 	if( file_io_handle == NULL )
@@ -1150,7 +1159,7 @@ int libbfio_file_io_handle_get_size(
      size64_t *size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_file_get_size";
+	const char *function  = "libbfio_file_get_size";
 
 	if( file_io_handle == NULL )
 	{

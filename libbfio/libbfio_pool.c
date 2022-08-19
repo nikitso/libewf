@@ -45,7 +45,7 @@ int libbfio_pool_initialize(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_initialize";
+	const char *function                   = "libbfio_pool_initialize";
 
 	if( pool == NULL )
 	{
@@ -202,7 +202,7 @@ int libbfio_pool_free(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_free";
+	const char *function                   = "libbfio_pool_free";
 	int result                             = 1;
 
 	if( pool == NULL )
@@ -281,7 +281,7 @@ int libbfio_pool_clone(
 {
 	libbfio_internal_pool_t *internal_destination_pool = NULL;
 	libbfio_internal_pool_t *internal_source_pool      = NULL;
-	static char *function                              = "libbfio_pool_clone";
+	const char *function                               = "libbfio_pool_clone";
 
 	if( destination_pool == NULL )
 	{
@@ -478,7 +478,7 @@ int libbfio_pool_resize(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_resize";
+	const char *function                   = "libbfio_pool_resize";
 	int result                             = 1;
 
 	if( pool == NULL )
@@ -552,7 +552,7 @@ int libbfio_internal_pool_open_handle(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_internal_pool_open_handle";
+	const char *function                       = "libbfio_internal_pool_open_handle";
 	int is_open                                = 0;
 
 	if( internal_pool == NULL )
@@ -669,7 +669,7 @@ int libbfio_internal_pool_append_handle_to_last_used_list(
 {
 	libbfio_internal_handle_t *internal_handle      = NULL;
 	libcdata_list_element_t *last_used_list_element = NULL;
-	static char *function                           = "libbfio_internal_pool_append_handle_to_last_used_list";
+	const char *function                            = "libbfio_internal_pool_append_handle_to_last_used_list";
 
 	if( internal_pool == NULL )
 	{
@@ -851,7 +851,7 @@ int libbfio_internal_pool_move_handle_to_front_of_last_used_list(
 	libbfio_internal_handle_t *internal_handle      = NULL;
 	libcdata_list_element_t *first_list_element     = NULL;
 	libcdata_list_element_t *last_used_list_element = NULL;
-	static char *function                           = "libbfio_internal_pool_move_handle_to_front_of_last_used_list";
+	const char *function                            = "libbfio_internal_pool_move_handle_to_front_of_last_used_list";
 
 	if( internal_pool == NULL )
 	{
@@ -966,7 +966,7 @@ int libbfio_internal_pool_remove_handle_from_last_used_list(
 {
 	libbfio_handle_t *last_used_handle              = NULL;
 	libcdata_list_element_t *last_used_list_element = NULL;
-	static char *function                           = "libbfio_internal_pool_remove_handle_from_last_used_list";
+	const char *function                            = "libbfio_internal_pool_remove_handle_from_last_used_list";
 
 	if( internal_pool == NULL )
 	{
@@ -1068,7 +1068,7 @@ int libbfio_pool_get_number_of_handles(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_get_number_of_handles";
+	const char *function                   = "libbfio_pool_get_number_of_handles";
 	int result                             = 1;
 
 	if( pool == NULL )
@@ -1141,7 +1141,7 @@ int libbfio_pool_get_handle(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_get_handle";
+	const char *function                   = "libbfio_pool_get_handle";
 	int result                             = 1;
 
 	if( pool == NULL )
@@ -1218,7 +1218,7 @@ int libbfio_pool_append_handle(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_append_handle";
+	const char *function                   = "libbfio_pool_append_handle";
 	int is_open                            = 0;
 	int number_of_handles                  = 0;
 	int result                             = 1;
@@ -1437,7 +1437,7 @@ int libbfio_pool_set_handle(
 {
 	libbfio_internal_handle_t *backup_handle = NULL;
 	libbfio_internal_pool_t *internal_pool   = NULL;
-	static char *function                    = "libbfio_pool_set_handle";
+	const char *function                     = "libbfio_pool_set_handle";
 	int is_open                              = 0;
 	int result                               = 1;
 
@@ -1631,7 +1631,7 @@ int libbfio_pool_remove_handle(
 {
 	libbfio_handle_t *backup_handle        = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_remove_handle";
+	const char *function                   = "libbfio_pool_remove_handle";
 	int result                             = 1;
 
 	if( pool == NULL )
@@ -1804,7 +1804,7 @@ int libbfio_pool_get_maximum_number_of_open_handles(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_get_maximum_number_of_open_handles";
+	const char *function                   = "libbfio_pool_get_maximum_number_of_open_handles";
 
 	if( pool == NULL )
 	{
@@ -1876,7 +1876,7 @@ int libbfio_pool_set_maximum_number_of_open_handles(
 	libbfio_internal_handle_t *internal_handle      = NULL;
 	libbfio_internal_pool_t *internal_pool          = NULL;
 	libcdata_list_element_t *last_used_list_element = NULL;
-	static char *function                           = "libbfio_pool_set_maximum_number_of_open_handles";
+	const char *function                            = "libbfio_pool_set_maximum_number_of_open_handles";
 
 	if( pool == NULL )
 	{
@@ -2054,7 +2054,7 @@ int libbfio_internal_pool_open(
      libcerror_error_t **error )
 {
 	libbfio_handle_t *handle = NULL;
-	static char *function    = "libbfio_internal_pool_open";
+	const char *function     = "libbfio_internal_pool_open";
 	int is_open              = 0;
 
 	if( internal_pool == NULL )
@@ -2146,7 +2146,7 @@ int libbfio_pool_open(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_open";
+	const char *function                   = "libbfio_pool_open";
 	int result                             = 1;
 
 	if( pool == NULL )
@@ -2222,7 +2222,7 @@ int libbfio_pool_reopen(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_reopen";
+	const char *function                   = "libbfio_pool_reopen";
 
 	if( pool == NULL )
 	{
@@ -2323,7 +2323,7 @@ int libbfio_internal_pool_close(
 	libbfio_handle_t *handle                        = NULL;
 	libbfio_internal_handle_t *internal_handle      = NULL;
 	libcdata_list_element_t *last_used_list_element = NULL;
-	static char *function                           = "libbfio_internal_pool_close";
+	const char *function                            = "libbfio_internal_pool_close";
 
 	if( internal_pool == NULL )
 	{
@@ -2468,7 +2468,7 @@ int libbfio_pool_close(
      libcerror_error_t **error )
 {
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_close";
+	const char *function                   = "libbfio_pool_close";
 	int result                             = 0;
 
 	if( pool == NULL )
@@ -2541,7 +2541,7 @@ int libbfio_pool_close_all(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_close_all";
+	const char *function                   = "libbfio_pool_close_all";
 	int entry                              = 0;
 	int is_open                            = 0;
 	int number_of_handles                  = 0;
@@ -2686,7 +2686,7 @@ int libbfio_internal_pool_get_open_handle(
      libcerror_error_t **error )
 {
 	libbfio_handle_t *safe_handle = NULL;
-	static char *function         = "libbfio_internal_pool_get_open_handle";
+	const char *function          = "libbfio_internal_pool_get_open_handle";
 	int access_flags              = 0;
 	int is_open                   = 0;
 
@@ -2818,7 +2818,7 @@ ssize_t libbfio_pool_read_buffer(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_read_buffer";
+	const char *function                   = "libbfio_pool_read_buffer";
 	ssize_t read_count                     = 0;
 
 	if( pool == NULL )
@@ -2917,7 +2917,7 @@ ssize_t libbfio_pool_read_buffer_at_offset(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_read_buffer_at_offset";
+	const char *function                   = "libbfio_pool_read_buffer_at_offset";
 	ssize_t read_count                     = 0;
 
 	if( pool == NULL )
@@ -3018,7 +3018,7 @@ ssize_t libbfio_pool_write_buffer(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_write_buffer";
+	const char *function                   = "libbfio_pool_write_buffer";
 	ssize_t write_count                    = 0;
 
 	if( pool == NULL )
@@ -3117,7 +3117,7 @@ ssize_t libbfio_pool_write_buffer_at_offset(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_write_buffer_at_offset";
+	const char *function                   = "libbfio_pool_write_buffer_at_offset";
 	ssize_t write_count                    = 0;
 
 	if( pool == NULL )
@@ -3218,7 +3218,7 @@ off64_t libbfio_pool_seek_offset(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_seek_offset";
+	const char *function                   = "libbfio_pool_seek_offset";
 
 	if( pool == NULL )
 	{
@@ -3314,7 +3314,7 @@ int libbfio_pool_get_offset(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_get_offset";
+	const char *function                   = "libbfio_pool_get_offset";
 	int result                             = 1;
 
 	if( pool == NULL )
@@ -3407,7 +3407,7 @@ int libbfio_pool_get_size(
 {
 	libbfio_handle_t *handle               = NULL;
 	libbfio_internal_pool_t *internal_pool = NULL;
-	static char *function                  = "libbfio_pool_get_size";
+	const char *function                   = "libbfio_pool_get_size";
 	int result                             = 1;
 
 	if( pool == NULL )

@@ -136,6 +136,7 @@ int libewf_set_codepage(
  */
 int libewf_check_file_signature(
      const char *filename,
+     libewf_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
@@ -170,6 +171,7 @@ int libewf_check_file_signature(
 	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -243,6 +245,7 @@ on_error:
  */
 int libewf_check_file_signature_wide(
      const wchar_t *filename,
+     libewf_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
@@ -277,6 +280,7 @@ int libewf_check_file_signature_wide(
 	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -744,6 +748,7 @@ int libewf_glob(
      uint8_t format,
      char **filenames[],
      int *number_of_filenames,
+     libewf_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
@@ -902,6 +907,7 @@ int libewf_glob(
 	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -1352,6 +1358,7 @@ int libewf_glob_wide(
      uint8_t format,
      wchar_t **filenames[],
      int *number_of_filenames,
+     libewf_FileHandle_t *fileHandle,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle = NULL;
@@ -1510,6 +1517,7 @@ int libewf_glob_wide(
 	}
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       fileHandle,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

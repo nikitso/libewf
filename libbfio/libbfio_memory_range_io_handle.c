@@ -39,7 +39,7 @@ int libbfio_memory_range_io_handle_initialize(
      libbfio_memory_range_io_handle_t **memory_range_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_initialize";
+	const char *function  = "libbfio_memory_range_io_handle_initialize";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -111,7 +111,7 @@ int libbfio_memory_range_io_handle_free(
      libbfio_memory_range_io_handle_t **memory_range_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_free";
+	const char *function  = "libbfio_memory_range_io_handle_free";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -142,7 +142,7 @@ int libbfio_memory_range_io_handle_clone(
      libbfio_memory_range_io_handle_t *source_memory_range_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_clone";
+	const char *function  = "libbfio_memory_range_io_handle_clone";
 
 	if( destination_memory_range_io_handle == NULL )
 	{
@@ -213,7 +213,7 @@ int libbfio_memory_range_io_handle_get(
      size_t *range_size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_get";
+	const char *function  = "libbfio_memory_range_io_handle_get";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -263,7 +263,7 @@ int libbfio_memory_range_io_handle_set(
      size_t range_size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_set";
+	const char *function  = "libbfio_memory_range_io_handle_set";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -312,7 +312,7 @@ int libbfio_memory_range_io_handle_open(
      int access_flags,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_open";
+	const char *function  = "libbfio_memory_range_io_handle_open";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -375,7 +375,7 @@ int libbfio_memory_range_io_handle_close(
      libbfio_memory_range_io_handle_t *memory_range_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_close";
+	const char *function  = "libbfio_memory_range_io_handle_close";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -424,7 +424,7 @@ ssize_t libbfio_memory_range_io_handle_read_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_read_buffer";
+	const char *function  = "libbfio_memory_range_io_handle_read_buffer";
 	size_t read_size      = 0;
 
 	if( memory_range_io_handle == NULL )
@@ -548,7 +548,7 @@ ssize_t libbfio_memory_range_io_handle_write_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_write_buffer";
+	const char *function  = "libbfio_memory_range_io_handle_write_buffer";
 	size_t write_size     = 0;
 
 	if( memory_range_io_handle == NULL )
@@ -672,7 +672,7 @@ off64_t libbfio_memory_range_io_handle_seek_offset(
          int whence,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_seek_offset";
+	const char *function  = "libbfio_memory_range_io_handle_seek_offset";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -773,7 +773,7 @@ int libbfio_memory_range_io_handle_exists(
      libbfio_memory_range_io_handle_t *memory_range_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_exists";
+	const char *function  = "libbfio_memory_range_io_handle_exists";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -800,7 +800,7 @@ int libbfio_memory_range_io_handle_is_open(
      libbfio_memory_range_io_handle_t *memory_range_io_handle,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_is_open";
+	const char *function  = "libbfio_memory_range_io_handle_is_open";
 
 	if( memory_range_io_handle == NULL )
 	{
@@ -829,7 +829,7 @@ int libbfio_memory_range_io_handle_get_size(
      size64_t *size,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_memory_range_io_handle_get_size";
+	const char *function  = "libbfio_memory_range_io_handle_get_size";
 
 	if( memory_range_io_handle == NULL )
 	{

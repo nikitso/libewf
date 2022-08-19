@@ -97,6 +97,7 @@ int libewf_set_codepage(
 LIBEWF_EXTERN \
 int libewf_check_file_signature(
      const char *filename,
+     libewf_FileHandle_t *fileHandle,
      libewf_error_t **error );
 
 #if defined( LIBEWF_HAVE_WIDE_CHARACTER_TYPE )
@@ -107,6 +108,7 @@ int libewf_check_file_signature(
 LIBEWF_EXTERN \
 int libewf_check_file_signature_wide(
      const wchar_t *filename,
+     libewf_FileHandle_t *fileHandle,
      libewf_error_t **error );
 
 #endif /* defined( LIBEWF_HAVE_WIDE_CHARACTER_TYPE ) */
@@ -304,6 +306,7 @@ LIBEWF_EXTERN \
 int libewf_handle_open(
      libewf_handle_t *handle,
      char * const filenames[],
+     libewf_FileHandle_t * const fileStreams[],
      int number_of_filenames,
      int access_flags,
      libewf_error_t **error );
@@ -319,6 +322,7 @@ LIBEWF_EXTERN \
 int libewf_handle_open_wide(
      libewf_handle_t *handle,
      wchar_t * const filenames[],
+     libewf_FileHandle_t * const fileStreams[],
      int number_of_filenames,
      int access_flags,
      libewf_error_t **error );

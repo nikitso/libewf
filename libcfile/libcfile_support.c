@@ -25,7 +25,7 @@
 #include <system_string.h>
 #include <types.h>
 #include <wide_string.h>
-#include <FileStreamInterface.h>
+#include <FileHandleApi.h>
 
 #if defined( HAVE_SYS_STAT_H )
 #include <sys/stat.h>
@@ -115,12 +115,12 @@ int libcfile_set_codepage(
  * Returns 1 if the file exists, 0 if not or -1 on error
  */
 int libcfile_file_exists(
-     const char *filename,
+     FileStreamHandle handle,
+     const wchar_t* filename,
      libcerror_error_t **error )
 {
-  const char *function  = "libcfile_file_exists";
+  const char *function   = "libcfile_file_exists";
   DWORD error_code       = 0;
-  FileStreamHandle handle = NULL;
   int result             = 1;
 
   if( filename == NULL )
@@ -134,10 +134,22 @@ int libcfile_file_exists(
 
     return( -1 );
   }
-  
-  handle = OpenFileHandle(filename);
+
   if( handle == NULL )
   {
+    libcerror_error_set(
+     error,
+     LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+     LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+     "%s: invalid file handle.",
+     function );
+
+    return( -1 );
+  }
+
+  if( OpenFileHandleWide(handle, filename) != 1 )
+  {
+    CloseFileHandle(handle);
     error_code = (uint32_t) GetLastError();
 
     switch( error_code )
@@ -196,6 +208,7 @@ int libcfile_file_exists(
  * Returns 1 if the file exists, 0 if not or -1 on error
  */
 int libcfile_file_exists(
+     FileStreamHandle handle,
      const char *filename,
      libcerror_error_t **error )
 {
@@ -273,13 +286,94 @@ int libcfile_file_exists(
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
-#if defined( HAVE_STAT )
+#if defined( WINAPI )
+
+/* Determines if a file exists using get file attibutes
+ * Returns 1 if the file exists, 0 if not or -1 on error
+ */
+int libcfile_file_exists_wide(
+     FileStreamHandle handle,
+     const wchar_t *filename,
+     libcerror_error_t** error)
+{
+  const char *function   = "libcfile_file_exists_wide";
+  DWORD error_code       = 0;
+  int result             = 1;
+
+  if( filename == NULL )
+  {
+    libcerror_error_set(
+     error,
+     LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+     LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+     "%s: invalid filename.",
+     function );
+
+    return( -1 );
+  }
+  
+  if( OpenFileHandleWide(handle, filename) != 1 )
+  {
+    CloseFileHandle(handle);
+    error_code = (uint32_t) GetLastError();
+
+    switch( error_code )
+    {
+      case ERROR_ACCESS_DENIED:
+        result = 1;
+
+        break;
+
+      case ERROR_FILE_NOT_FOUND:
+      case ERROR_PATH_NOT_FOUND:
+        result = 0;
+
+        break;
+
+      default:
+        libcerror_system_set_error(
+         error,
+         LIBCERROR_ERROR_DOMAIN_IO,
+         LIBCERROR_IO_ERROR_OPEN_FAILED,
+         error_code,
+         "%s: unable to open file: %s.",
+         function,
+         filename );
+
+        return( -1 );
+    }
+  }
+  else
+  {
+    result = CloseFileHandle(handle);
+    if( result == 0 )
+    {
+      error_code = GetLastError();
+
+      libcerror_system_set_error(
+       error,
+       LIBCERROR_ERROR_DOMAIN_IO,
+       LIBCERROR_IO_ERROR_CLOSE_FAILED,
+       error_code,
+       "%s: unable to close file.",
+       function );
+
+      return( -1 );
+    }
+    result = 1;
+  }
+
+  return( result );
+}
+
+#elif defined( HAVE_STAT )
 
 /* Determines if a file exists
  * This function uses the POSIX stat function or equivalent
  * Returns 1 if the file exists, 0 if not or -1 on error
  */
 int libcfile_file_exists_wide(
+     FileStreamHandle handle,
      const wchar_t *filename,
      libcerror_error_t **error )
 {
@@ -468,6 +562,8 @@ int libcfile_file_exists_wide(
   return( result );
 }
 
+#else
+#error Missing file exists function
 #endif
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */

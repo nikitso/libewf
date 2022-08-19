@@ -45,7 +45,7 @@ int libbfio_get_codepage(
      int *codepage,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_get_codepage";
+	const char *function  = "libbfio_get_codepage";
 
 	if( libclocale_codepage_get(
 	     codepage,
@@ -71,7 +71,7 @@ int libbfio_set_codepage(
      int codepage,
      libcerror_error_t **error )
 {
-	static char *function = "libbfio_set_codepage";
+	const char *function  = "libbfio_set_codepage";
 
 	if( libclocale_codepage_set(
 	     codepage,

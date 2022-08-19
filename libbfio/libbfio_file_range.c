@@ -43,7 +43,7 @@ int libbfio_file_range_initialize(
      libcerror_error_t **error )
 {
 	libbfio_file_range_io_handle_t *file_range_io_handle = NULL;
-	static char *function                                = "libbfio_range_file_initialize";
+	const char *function                                 = "libbfio_range_file_initialize";
 
 	if( handle == NULL )
 	{
@@ -127,7 +127,7 @@ int libbfio_file_range_get_name_size(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_get_name_size";
+	const char *function                       = "libbfio_file_range_get_name_size";
 
 	if( handle == NULL )
 	{
@@ -170,7 +170,7 @@ int libbfio_file_range_get_name(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_get_name";
+	const char *function                       = "libbfio_file_range_get_name";
 
 	if( handle == NULL )
 	{
@@ -213,7 +213,7 @@ int libbfio_file_range_set_name(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_set_name";
+	const char *function                       = "libbfio_file_range_set_name";
 
 	if( handle == NULL )
 	{
@@ -258,7 +258,7 @@ int libbfio_file_range_get_name_size_wide(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_get_name_size_wide";
+	const char *function                       = "libbfio_file_range_get_name_size_wide";
 
 	if( handle == NULL )
 	{
@@ -301,7 +301,7 @@ int libbfio_file_range_get_name_wide(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_get_name_wide";
+	const char *function                       = "libbfio_file_range_get_name_wide";
 
 	if( handle == NULL )
 	{
@@ -344,7 +344,7 @@ int libbfio_file_range_set_name_wide(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_set_name_wide";
+	const char *function                       = "libbfio_file_range_set_name_wide";
 
 	if( handle == NULL )
 	{
@@ -389,7 +389,7 @@ int libbfio_file_range_get(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_get";
+	const char *function                       = "libbfio_file_range_get";
 
 	if( handle == NULL )
 	{
@@ -433,7 +433,7 @@ int libbfio_file_range_set(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_file_range_set";
+	const char *function                       = "libbfio_file_range_set";
 
 	if( handle == NULL )
 	{

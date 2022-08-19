@@ -208,6 +208,7 @@ typedef intptr_t libewf_file_entry_t;
 typedef intptr_t libewf_handle_t;
 typedef intptr_t libewf_source_t;
 typedef intptr_t libewf_subject_t;
+typedef intptr_t libewf_FileHandle_t;
 
 #ifdef __cplusplus
 }

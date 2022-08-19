@@ -2484,6 +2484,7 @@ int libewf_write_io_handle_create_segment_file(
 #endif
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       NULL,
 	     error ) != 1 )
 	{
 		libcerror_error_set(

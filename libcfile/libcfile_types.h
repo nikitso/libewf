@@ -38,6 +38,7 @@ typedef struct libcfile_file {}	libcfile_file_t;
 
 #else
 typedef intptr_t libcfile_file_t;
+typedef intptr_t libcfile_FileHandle_t;
 
 #endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
 

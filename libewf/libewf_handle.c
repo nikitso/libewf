@@ -879,6 +879,7 @@ int libewf_handle_signal_abort(
 int libewf_handle_open(
      libewf_handle_t *handle,
      char * const filenames[],
+     libewf_FileHandle_t * const fileHandles[],
      int number_of_filenames,
      int access_flags,
      libcerror_error_t **error )
@@ -1015,6 +1016,7 @@ int libewf_handle_open(
 			}
 			if( libbfio_file_initialize(
 			     &file_io_handle,
+           fileHandles[ filename_index ],
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -1248,6 +1250,7 @@ on_error:
 int libewf_handle_open_wide(
      libewf_handle_t *handle,
      wchar_t * const filenames[],
+     libewf_FileHandle_t * const fileHandles[],
      int number_of_filenames,
      int access_flags,
      libcerror_error_t **error )
@@ -1384,6 +1387,7 @@ int libewf_handle_open_wide(
 			}
 			if( libbfio_file_initialize(
 			     &file_io_handle,
+           fileHandles[ filename_index ],
 			     error ) != 1 )
 			{
 				libcerror_error_set(

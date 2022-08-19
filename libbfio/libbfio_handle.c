@@ -82,7 +82,7 @@ int libbfio_handle_initialize(
       libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_initialize";
+	const char *function                       = "libbfio_handle_initialize";
 
 	if( handle == NULL )
 	{
@@ -206,7 +206,7 @@ int libbfio_handle_free(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_free";
+	const char *function                       = "libbfio_handle_free";
 	int is_open                                = 0;
 	int result                                 = 1;
 
@@ -336,7 +336,7 @@ int libbfio_handle_clone(
 {
 	libbfio_internal_handle_t *internal_source_handle = NULL;
 	intptr_t *destination_io_handle                   = NULL;
-	static char *function                             = "libbfio_handle_clone";
+	const char *function                              = "libbfio_handle_clone";
 	uint8_t destination_flags                         = 0;
 
 	if( destination_handle == NULL )
@@ -541,7 +541,7 @@ int libbfio_handle_open(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_open";
+	const char *function                       = "libbfio_handle_open";
 
 	if( handle == NULL )
 	{
@@ -672,7 +672,7 @@ int libbfio_handle_reopen(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_reopen";
+	const char *function                       = "libbfio_handle_reopen";
 
 	if( handle == NULL )
 	{
@@ -852,7 +852,7 @@ int libbfio_handle_close(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_close";
+	const char *function                       = "libbfio_handle_close";
 	int is_open                                = 1;
 
 	if( handle == NULL )
@@ -986,7 +986,7 @@ ssize_t libbfio_internal_handle_read_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_internal_handle_read_buffer";
+	const char *function  = "libbfio_internal_handle_read_buffer";
 	ssize_t read_count    = 0;
 	int is_open           = 0;
 	int result            = 0;
@@ -1201,7 +1201,7 @@ ssize_t libbfio_handle_read_buffer(
          libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_read_buffer";
+	const char *function                       = "libbfio_handle_read_buffer";
 	ssize_t read_count                         = 0;
 
 	if( handle == NULL )
@@ -1289,7 +1289,7 @@ ssize_t libbfio_handle_read_buffer_at_offset(
          libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_read_buffer_at_offset";
+	const char *function                       = "libbfio_handle_read_buffer_at_offset";
 	ssize_t read_count                         = 0;
 
 	if( handle == NULL )
@@ -1396,7 +1396,7 @@ ssize_t libbfio_internal_handle_write_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_internal_handle_write_buffer";
+	const char *function  = "libbfio_internal_handle_write_buffer";
 	ssize_t write_count   = 0;
 
 	if( internal_handle == NULL )
@@ -1479,7 +1479,7 @@ ssize_t libbfio_handle_write_buffer(
          libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_write_buffer";
+	const char *function                       = "libbfio_handle_write_buffer";
 	ssize_t write_count                        = 0;
 
 	if( handle == NULL )
@@ -1567,7 +1567,7 @@ ssize_t libbfio_handle_write_buffer_at_offset(
          libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_write_buffer_at_offset";
+	const char *function                       = "libbfio_handle_write_buffer_at_offset";
 	ssize_t write_count                        = 0;
 
 	if( handle == NULL )
@@ -1674,7 +1674,7 @@ off64_t libbfio_internal_handle_seek_offset(
          int whence,
          libcerror_error_t **error )
 {
-	static char *function = "libbfio_internal_handle_seek_offset";
+	const char *function  = "libbfio_internal_handle_seek_offset";
 
 	if( internal_handle == NULL )
 	{
@@ -1743,7 +1743,7 @@ off64_t libbfio_handle_seek_offset(
          libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_seek_offset";
+	const char *function                       = "libbfio_handle_seek_offset";
 
 	if( handle == NULL )
 	{
@@ -1827,7 +1827,7 @@ int libbfio_handle_exists(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_exists";
+	const char *function                       = "libbfio_handle_exists";
 	int result                                 = 0;
 
 	if( handle == NULL )
@@ -1929,7 +1929,7 @@ int libbfio_handle_is_open(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_is_open";
+	const char *function                       = "libbfio_handle_is_open";
 	int result                                 = 0;
 
 	if( handle == NULL )
@@ -2032,7 +2032,7 @@ int libbfio_handle_get_io_handle(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_get_io_handle";
+	const char *function                       = "libbfio_handle_get_io_handle";
 
 	if( handle == NULL )
 	{
@@ -2102,7 +2102,7 @@ int libbfio_handle_get_access_flags(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_get_access_flags";
+	const char *function                       = "libbfio_handle_get_access_flags";
 
 	if( handle == NULL )
 	{
@@ -2172,7 +2172,7 @@ int libbfio_handle_set_access_flags(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_set_access_flags";
+	const char *function                       = "libbfio_handle_set_access_flags";
 
 	if( handle == NULL )
 	{
@@ -2243,7 +2243,7 @@ int libbfio_handle_get_offset(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_get_offset";
+	const char *function                       = "libbfio_handle_get_offset";
 
 	if( handle == NULL )
 	{
@@ -2313,7 +2313,7 @@ int libbfio_handle_get_size(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_get_size";
+	const char *function                       = "libbfio_handle_get_size";
 
 	if( handle == NULL )
 	{
@@ -2433,7 +2433,7 @@ int libbfio_handle_set_open_on_demand(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_set_open_on_demand";
+	const char *function                       = "libbfio_handle_set_open_on_demand";
 
 	if( handle == NULL )
 	{
@@ -2505,7 +2505,7 @@ int libbfio_handle_set_track_offsets_read(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_set_track_offsets_read";
+	const char *function                       = "libbfio_handle_set_track_offsets_read";
 
 	if( handle == NULL )
 	{
@@ -2564,7 +2564,7 @@ int libbfio_handle_get_number_of_offsets_read(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_get_number_of_offsets_read";
+	const char *function                       = "libbfio_handle_get_number_of_offsets_read";
 
 	if( handle == NULL )
 	{
@@ -2645,7 +2645,7 @@ int libbfio_handle_get_offset_read(
      libcerror_error_t **error )
 {
 	libbfio_internal_handle_t *internal_handle = NULL;
-	static char *function                      = "libbfio_handle_get_offset_read";
+	const char *function                       = "libbfio_handle_get_offset_read";
 	intptr_t *value                            = NULL;
 
 	if( handle == NULL )

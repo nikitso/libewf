@@ -27,6 +27,7 @@
 
 #include "libbfio_libcerror.h"
 #include "libbfio_libcfile.h"
+#include "libbfio_types.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -55,6 +56,7 @@ struct libbfio_file_io_handle
 
 int libbfio_file_io_handle_initialize(
      libbfio_file_io_handle_t **file_io_handle,
+     libbfio_FileHandle_t *fileHandle,
      libcerror_error_t **error );
 
 int libbfio_file_io_handle_free(
