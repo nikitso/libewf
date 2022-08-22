@@ -1630,8 +1630,243 @@ ssize_t libcfile_file_write_buffer(
          size_t size,
          libcerror_error_t **error )
 {
-  return -1;
+	const char *function  = "libcfile_file_write_buffer";
+	ssize_t write_count   = 0;
+	uint32_t error_code   = 0;
+
+	write_count = libcfile_file_write_buffer_with_error_code(
+	               file,
+	               buffer,
+	               size,
+	               &error_code,
+	               error );
+
+	if( write_count == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
+		 "%s: unable to write to file.",
+		 function );
+
+		return( -1 );
+	}
+	return( write_count );
 }
+
+#if defined( WINAPI )
+
+/* Writes a buffer to the file
+ * Returns the number of bytes written if successful, or -1 on error
+ */
+ssize_t libcfile_file_write_buffer_with_error_code(
+         libcfile_file_t *file,
+         const uint8_t *buffer,
+         size_t size,
+         uint32_t *error_code,
+         libcerror_error_t **error )
+{
+	libcfile_internal_file_t *internal_file = NULL;
+	const char *function                    = "libcfile_file_write_buffer_with_error_code";
+	ssize_t write_count                     = 0;
+	BOOL result                             = FALSE;
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libcfile_internal_file_t *) file;
+
+	if( internal_file->Handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid file - missing handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
+#if ( UINT32_MAX < SSIZE_MAX )
+	if( size > (size_t) UINT32_MAX )
+#else
+	if( size > (size_t) SSIZE_MAX )
+#endif
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( error_code == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid error code.",
+		 function );
+
+		return( -1 );
+	}
+
+  result = WriteFileHandle(internal_file->Handle, buffer, size, &write_count);
+	if( result == 0 )
+	{
+		*error_code = (uint32_t) GetLastFileHandleError();
+
+		libcerror_system_set_error(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
+		 *error_code,
+		 "%s: unable to write to file.",
+		 function );
+
+		return( -1 );
+	}
+	if( write_count < 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
+		 "%s: invalid write count: %" PRIzd " returned.",
+		 function,
+		 write_count );
+
+		return( -1 );
+	}
+	internal_file->current_offset += write_count;
+
+	return( write_count );
+}
+
+#elif defined( HAVE_WRITE )
+
+/* Writes a buffer to the file
+ * This function uses the POSIX write function or equivalent
+ * Returns the number of bytes written if successful, or -1 on error
+ */
+ssize_t libcfile_file_write_buffer_with_error_code(
+         libcfile_file_t *file,
+         const uint8_t *buffer,
+         size_t size,
+         uint32_t *error_code,
+         libcerror_error_t **error )
+{
+	libcfile_internal_file_t *internal_file = NULL;
+	const char *function                   = "libcfile_file_write_buffer_with_error_code";
+	ssize_t write_count                     = 0;
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libcfile_internal_file_t *) file;
+
+	if( internal_file->descriptor == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid file - missing descriptor.",
+		 function );
+
+		return( -1 );
+	}
+	if( buffer == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid buffer.",
+		 function );
+
+		return( -1 );
+	}
+	if( size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( error_code == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid error code.",
+		 function );
+
+		return( -1 );
+	}
+	write_count = write(
+	               internal_file->descriptor,
+	               (void *) buffer,
+	               size );
+
+	if( write_count < 0 )
+	{
+		*error_code = (uint32_t) errno;
+
+		libcerror_system_set_error(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_WRITE_FAILED,
+		 *error_code,
+		 "%s: unable to write to file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file->current_offset += write_count;
+
+	return( write_count );
+}
+
+#else
+#error Missing file write function
+#endif
 
 #if defined( WINAPI )
 

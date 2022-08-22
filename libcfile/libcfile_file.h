@@ -152,6 +152,14 @@ off64_t libcfile_file_seek_offset(
          libcerror_error_t **error );
 
 LIBCFILE_EXTERN \
+ssize_t libcfile_file_write_buffer_with_error_code(
+  libcfile_file_t* file,
+  const uint8_t* buffer,
+  size_t size,
+  uint32_t* error_code,
+  libcerror_error_t** error);
+
+LIBCFILE_EXTERN \
 int libcfile_file_is_open(
      libcfile_file_t *file,
      libcerror_error_t **error );
