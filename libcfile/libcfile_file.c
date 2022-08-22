@@ -202,6 +202,9 @@ int libcfile_file_free(
 
         result = -1;
       }
+
+      DeleteFileHandle(internal_file->Handle);
+      internal_file->Handle = NULL;
     }
     *file = NULL;
 
