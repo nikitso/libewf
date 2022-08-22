@@ -24,9 +24,10 @@
 
 #include <common.h>
 
-#if defined( HAVE_MULTI_THREAD_SUPPORT ) && !defined( HAVE_LOCAL_LIBEWF )
-#define HAVE_LIBEWF_MULTI_THREAD_SUPPORT
-#endif
+// Multi thread is currently not supported
+// #if defined( HAVE_MULTI_THREAD_SUPPORT ) && !defined( HAVE_LOCAL_LIBEWF )
+// #define HAVE_LIBEWF_MULTI_THREAD_SUPPORT
+// #endif
 
 #if defined( HAVE_LIBEWF_MULTI_THREAD_SUPPORT )
 
