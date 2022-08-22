@@ -2482,8 +2482,20 @@ int libewf_write_io_handle_create_segment_file(
 		 filename );
 	}
 #endif
+
+  libcerror_error_set(
+    error,
+    LIBCERROR_ERROR_DOMAIN_RUNTIME,
+    LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+    "%s: function is not supported.",
+    function);
+
+  goto on_error;
+  return -1;
+
 	if( libbfio_file_initialize(
 	     &file_io_handle,
+       // check if file_io_handle already has initialized file handle
        NULL,
 	     error ) != 1 )
 	{
