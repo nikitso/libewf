@@ -61,6 +61,7 @@
 #include "ewf_data.h"
 #include "ewf_section.h"
 #include "ewf_table.h"
+#include "FileHandleApi.h"
 
 /* Creates a write IO handle
  * Make sure the value write_io_handle is referencing, is set to NULL
@@ -2375,6 +2376,7 @@ int libewf_write_io_handle_create_segment_file(
      const uint8_t *set_identifier,
      int *file_io_pool_entry,
      libewf_segment_file_t **segment_file,
+     void* createFileHandleFunc,
      libcerror_error_t **error )
 {
 	libbfio_handle_t *file_io_handle         = NULL;
@@ -2440,6 +2442,17 @@ int libewf_write_io_handle_create_segment_file(
 
 		return( -1 );
 	}
+  if( createFileHandleFunc == NULL )
+  {
+    libcerror_error_set(
+      error,
+      LIBCERROR_ERROR_DOMAIN_RUNTIME,
+      LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+      "%s: file handle factory is missing.",
+      function);
+
+    return( -1 );
+  }
 	if( libewf_filename_create(
 	     &filename,
 	     &filename_size,
@@ -2483,22 +2496,14 @@ int libewf_write_io_handle_create_segment_file(
 	}
 #endif
 
-  libcerror_error_set(
-    error,
-    LIBCERROR_ERROR_DOMAIN_RUNTIME,
-    LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-    "%s: function is not supported.",
-    function);
-
-  goto on_error;
-  return -1;
-
+  libbfio_FileHandle_t* (*functionPtr)(wchar_t*) = createFileHandleFunc;
+  libbfio_FileHandle_t* fileHandle = (*functionPtr)(filename);
 	if( libbfio_file_initialize(
 	     &file_io_handle,
-       // check if file_io_handle already has initialized file handle
-       NULL,
+       fileHandle,
 	     error ) != 1 )
 	{
+    DeleteFileHandle(fileHandle);
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
@@ -3112,6 +3117,7 @@ ssize_t libewf_write_io_handle_write_new_chunk_create_segment_file(
          uint32_t segment_number,
          int *file_io_pool_entry,
          libewf_segment_file_t **segment_file,
+         void* createFileHandleFunc,
          libcerror_error_t **error )
 {
 	libewf_segment_file_t *safe_segment_file = NULL;
@@ -3208,6 +3214,7 @@ ssize_t libewf_write_io_handle_write_new_chunk_create_segment_file(
 	     media_values->set_identifier,
 	     &safe_file_io_pool_entry,
 	     &safe_segment_file,
+       createFileHandleFunc,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -3613,6 +3620,7 @@ ssize_t libewf_write_io_handle_write_new_chunk(
          uint64_t chunk_index,
          libewf_chunk_data_t *chunk_data,
          size_t input_data_size,
+         void* createFileHandleFunc,
          libcerror_error_t **error )
 {
 	static char *function     = "libewf_write_io_handle_write_new_chunk";
@@ -3712,6 +3720,7 @@ ssize_t libewf_write_io_handle_write_new_chunk(
 			       write_io_handle->current_segment_number,
 			       &( write_io_handle->current_file_io_pool_entry ),
 			       &( write_io_handle->current_segment_file ),
+             createFileHandleFunc,
 			       error );
 
 		if( write_count < 0 )

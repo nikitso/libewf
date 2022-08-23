@@ -138,6 +138,8 @@ struct libewf_internal_handle
 	 */
 	libewf_single_files_t *single_files;
 
+  void* createFileHandleFunc;
+
 #if defined( HAVE_LIBEWF_MULTI_THREAD_SUPPORT )
 	/* The read/write lock
 	 */
@@ -148,6 +150,7 @@ struct libewf_internal_handle
 LIBEWF_EXTERN \
 int libewf_handle_initialize(
      libewf_handle_t **handle,
+     void* createFileHandleFunc,
      libcerror_error_t **error );
 
 LIBEWF_EXTERN \

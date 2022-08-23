@@ -293,6 +293,7 @@ int libewf_write_io_handle_create_segment_file(
      const uint8_t *set_identifier,
      int *file_io_pool_entry,
      libewf_segment_file_t **segment_file,
+     void* createFileHandleFunc,
      libcerror_error_t **error );
 
 int libewf_write_io_handle_generate_table_entries_data(
@@ -331,6 +332,7 @@ ssize_t libewf_write_io_handle_write_new_chunk_create_segment_file(
          uint32_t segment_number,
          int *file_io_pool_entry,
          libewf_segment_file_t **segment_file,
+         void* createFileHandleFunc,
          libcerror_error_t **error );
 
 ssize_t libewf_write_io_handle_write_new_chunk_create_chunks_section(
@@ -367,6 +369,7 @@ ssize_t libewf_write_io_handle_write_new_chunk(
          uint64_t chunk_index,
          libewf_chunk_data_t *chunk_data,
          size_t input_data_size,
+         void* createFileHandleFunc,
          libcerror_error_t **error );
 
 int libewf_write_io_handle_finalize_write_sections_corrections(

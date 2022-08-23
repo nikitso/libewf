@@ -81,6 +81,7 @@
  */
 int libewf_handle_initialize(
      libewf_handle_t **handle,
+     void* createFileHandleFunc,
      libcerror_error_t **error )
 {
 	libewf_internal_handle_t *internal_handle = NULL;
@@ -236,6 +237,7 @@ int libewf_handle_initialize(
 		goto on_error;
 	}
 #endif
+  internal_handle->createFileHandleFunc           = createFileHandleFunc;
 	internal_handle->date_format                    = LIBEWF_DATE_FORMAT_CTIME;
 	internal_handle->maximum_number_of_open_handles = LIBBFIO_POOL_UNLIMITED_NUMBER_OF_OPEN_HANDLES;
 
@@ -5031,6 +5033,7 @@ ssize_t libewf_internal_handle_write_buffer_to_file_io_pool(
 			               chunk_index,
 			               internal_handle->chunk_data,
 			               input_data_size,
+                     internal_handle->createFileHandleFunc,
 			               error );
 
 			if( write_count <= 0 )
@@ -5845,6 +5848,7 @@ ssize_t libewf_internal_handle_write_data_chunk_to_file_io_pool(
 	               current_chunk_index,
 	               internal_data_chunk->chunk_data,
 	               data_size,
+                 internal_handle->createFileHandleFunc,
 	               error );
 
 	if( write_count < 0 )
@@ -6109,6 +6113,7 @@ ssize_t libewf_internal_handle_write_finalize_file_io_pool(
 			       chunk_index,
 			       internal_handle->chunk_data,
 			       input_data_size,
+             internal_handle->createFileHandleFunc,
 			       error );
 
 		if( write_count <= 0 )
@@ -6180,6 +6185,7 @@ ssize_t libewf_internal_handle_write_finalize_file_io_pool(
 		     internal_handle->media_values->set_identifier,
 		     &file_io_pool_entry,
 		     &segment_file,
+         internal_handle->createFileHandleFunc,
 		     error ) != 1 )
 		{
 			libcerror_error_set(

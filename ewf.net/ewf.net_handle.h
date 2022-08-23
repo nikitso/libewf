@@ -100,12 +100,13 @@ public ref class Handle sealed
 {
 	private:
 		System::IntPtr ewf_handle;
+		System::IntPtr _createFileHandleFunc;
 
 	private:
-		Handle( System::IntPtr ewf_handle );
+		Handle( System::IntPtr ewf_handle, System::IntPtr createFileHandleFunc );
 
 	public:
-		Handle( void );
+		Handle( System::IntPtr createFileHandleFunc );
 		~Handle( void );
 
 		static int GetAccessFlagsRead( void );

@@ -270,6 +270,7 @@ int libewf_error_backtrace_sprint(
 LIBEWF_EXTERN \
 int libewf_handle_initialize(
      libewf_handle_t **handle,
+     void* createFileHandleFunc,
      libewf_error_t **error );
 
 /* Frees a handle

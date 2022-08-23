@@ -50,13 +50,15 @@ using namespace msclr::interop;
 
 namespace EWF {
 
-Handle::Handle( System::IntPtr ewf_handle )
+Handle::Handle( System::IntPtr ewf_handle, System::IntPtr createFileHandleFunc )
 {
+  _createFileHandleFunc = createFileHandleFunc;
 	this->ewf_handle = ewf_handle;
 }
 
-Handle::Handle( void )
+Handle::Handle( System::IntPtr createFileHandleFunc )
 {
+  _createFileHandleFunc = createFileHandleFunc;
 	char ewf_error_string[ EWF_NET_ERROR_STRING_SIZE ];
 
 	libewf_error_t *error        = NULL;
@@ -66,6 +68,7 @@ Handle::Handle( void )
 
 	if( libewf_handle_initialize(
 	     &handle,
+       createFileHandleFunc.ToPointer(),
 	     &error ) != 1 )
 	{
 		error_string = gcnew System::String(
@@ -340,8 +343,7 @@ Handle^ Handle::Clone( void )
 		throw gcnew System::Exception(
 			     error_string );
 	}
-	return( gcnew Handle( Marshal::ReadIntPtr(
-	                       (IntPtr) &destination_handle ) ) );
+	return( gcnew Handle( Marshal::ReadIntPtr((IntPtr) &destination_handle ), _createFileHandleFunc) );
 }
 
 void Handle::Open( array<System::String^>^ filenames,
