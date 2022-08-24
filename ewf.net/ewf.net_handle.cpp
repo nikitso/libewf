@@ -347,7 +347,6 @@ Handle^ Handle::Clone( void )
 }
 
 void Handle::Open( array<System::String^>^ filenames,
-                   array<IntPtr>^ fileHandles,
                    int access_flags )
 {
 	char ewf_error_string[ EWF_NET_ERROR_STRING_SIZE ];
@@ -357,7 +356,6 @@ void Handle::Open( array<System::String^>^ filenames,
 	System::String^ error_string    = nullptr;
 	System::String^ function        = "Handle::Open";
 	wchar_t **ewf_filenames         = NULL;
-  libewf_FileHandle_t **ewf_fileHandles = NULL;
 	pin_ptr<const wchar_t> filename = nullptr;
 	int ewf_filename_index          = 0;
 	int ewf_number_of_filenames     = 0;
@@ -383,7 +381,6 @@ void Handle::Open( array<System::String^>^ filenames,
 	}
 
 	ewf_filenames = (wchar_t **) memory_allocate( sizeof( wchar_t* ) * ewf_number_of_filenames );
-  ewf_fileHandles = (libewf_FileHandle_t **) memory_allocate( sizeof( libewf_FileHandle_t * ) * ewf_number_of_filehandles );
 
 	if( ewf_filenames == NULL )
 	{
@@ -398,12 +395,11 @@ void Handle::Open( array<System::String^>^ filenames,
 		            filenames[ ewf_filename_index ] );
 
 		ewf_filenames[ ewf_filename_index ] = (wchar_t *) filename;
-    ewf_fileHandles [ ewf_filename_index ] = (libewf_FileHandle_t *) fileHandles[ ewf_filename_index ].ToPointer();
 	}
 	if( libewf_handle_open_wide(
 	     handle,
 	     (wchar_t * const *) ewf_filenames,
-       ewf_fileHandles,
+       NULL,
 	     ewf_number_of_filenames,
 	     access_flags,
 	     &error ) != 1 )

@@ -121,7 +121,6 @@ public ref class Handle sealed
 		Handle^ Clone( void );
 
 		void Open( array<System::String^>^ filenames,
-               array<IntPtr>^ fileStreams,
 		           int access_flags );
 
 		void Close( void );
