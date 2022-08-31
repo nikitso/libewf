@@ -276,6 +276,7 @@
     <ClInclude Include="..\..\libewf\libewf_libcaes.h" />
     <ClInclude Include="..\..\libewf\libewf_libcdata.h" />
     <ClInclude Include="..\..\libewf\libewf_libcerror.h" />
+    <ClInclude Include="..\..\libewf\libewf_libcfile.h" />
     <ClInclude Include="..\..\libewf\libewf_libclocale.h" />
     <ClInclude Include="..\..\libewf\libewf_libcnotify.h" />
     <ClInclude Include="..\..\libewf\libewf_libcthreads.h" />

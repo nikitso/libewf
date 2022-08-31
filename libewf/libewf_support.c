@@ -28,6 +28,7 @@
 #include "libewf_definitions.h"
 #include "libewf_filename.h"
 #include "libewf_error.h"
+#include "libewf_libcfile.h"
 #include "libewf_libbfio.h"
 #include "libewf_libcerror.h"
 #include "libewf_libclocale.h"
@@ -130,6 +131,13 @@ int libewf_set_codepage(
 }
 
 #endif /* !defined( HAVE_LOCAL_LIBEWF ) */
+
+int libewf_set_io_backend(
+  file_exists_ptr file_exists,
+  file_exists_wide_ptr file_exists_wide )
+{
+  return libcfile_set_io_backend(file_exists, file_exists_wide);
+}
 
 /* Determines if a file contains an EWF file signature
  * Returns 1 if true, 0 if not or -1 on error

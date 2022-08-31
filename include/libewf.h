@@ -91,6 +91,14 @@ int libewf_set_codepage(
      int codepage,
      libewf_error_t **error );
 
+typedef int (*file_exists_ptr)( const char *, libewf_error_t **);
+typedef int (*file_exists_wide_ptr)( const wchar_t *, libewf_error_t **);
+
+LIBEWF_EXTERN \
+int libewf_set_io_backend(
+  file_exists_ptr file_exists,
+  file_exists_wide_ptr file_exists_wide );
+
 /* Determines if a file contains an EWF file signature
  * Returns 1 if true, 0 if not or -1 on error
  */

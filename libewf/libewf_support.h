@@ -67,6 +67,14 @@ int libewf_set_codepage(
 
 #endif /* !defined( HAVE_LOCAL_LIBEWF ) */
 
+typedef int (*file_exists_ptr)( const char *, libcerror_error_t **);
+typedef int (*file_exists_wide_ptr)( const wchar_t *, libcerror_error_t **);
+
+LIBEWF_EXTERN \
+int libewf_set_io_backend(
+  file_exists_ptr file_exists,
+  file_exists_wide_ptr file_exists_wide );
+
 LIBEWF_EXTERN \
 int libewf_check_file_signature(
      const char *filename,

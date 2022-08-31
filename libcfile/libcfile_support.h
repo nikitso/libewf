@@ -50,45 +50,27 @@ int libcfile_set_codepage(
 
 #endif /* !defined( HAVE_LOCAL_LIBCFILE ) */
 
+typedef int (*file_exists_ptr)( const char *, libcerror_error_t **);
+typedef int (*file_exists_wide_ptr)( const wchar_t *, libcerror_error_t **);
+
+LIBCFILE_EXTERN_VARIABLE file_exists_ptr custom_io_file_exists_ptr;
+LIBCFILE_EXTERN_VARIABLE file_exists_wide_ptr custom_io_file_exists_wide_ptr;
+
+LIBCFILE_EXTERN \
+int libcfile_set_io_backend(
+  file_exists_ptr file_exists,
+  file_exists_wide_ptr file_exists_wide
+  );
+
 LIBCFILE_EXTERN \
 int libcfile_file_exists(
      const char *filename,
      libcerror_error_t **error );
 
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
 LIBCFILE_EXTERN \
 int libcfile_file_exists_wide(
      const wchar_t *filename,
      libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_with_error_code(
-     const char *filename,
-     uint32_t *error_code,
-     libcerror_error_t **error );
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_wide(
-     const wchar_t *filename,
-     libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_wide_with_error_code(
-     const wchar_t *filename,
-     uint32_t *error_code,
-     libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( __cplusplus )
 }

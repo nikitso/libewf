@@ -464,6 +464,9 @@
     <ClInclude Include="..\..\libewf\libewf_write_io_handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\libewf\libewf_libcfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\libewf\libewf.rc">
