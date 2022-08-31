@@ -94,6 +94,7 @@ typedef size_t u64;
 #include "libcfile_system_string.h"
 #include "libcfile_types.h"
 #include "libcfile_winapi.h"
+#include "libcfile_support.h"
 
 /* Creates a file
  * Make sure the value file is referencing, is set to NULL
@@ -259,20 +260,6 @@ int libcfile_file_open(
 	return( 1 );
 }
 
-#if defined( WINAPI )
-
-#if ( WINVER >= 0x0600 ) && ( WINVER < 0x0602 )
-
-#define FileAlignmentInfo 0x11
-
-typedef struct _FILE_ALIGNMENT_INFO FILE_ALIGNMENT_INFO;
-
-struct _FILE_ALIGNMENT_INFO {
-	ULONG AlignmentRequirement;
-};
-
-#endif
-
 /* Opens a file
  * This function uses the WINAPI function for Windows XP (0x0501) or later,
  * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
@@ -285,12 +272,6 @@ int libcfile_file_open_with_error_code(
      uint32_t *error_code,
      libcerror_error_t **error )
 {
-#if ( WINVER >= 0x0600 )
-	FILE_ALIGNMENT_INFO file_alignment_information;
-
-	BOOL result                             = 0;
-#endif
-
 	libcfile_internal_file_t *internal_file = NULL;
 	static char *function                   = "libcfile_file_open_with_error_code";
 	DWORD file_io_access_flags              = 0;
@@ -324,17 +305,12 @@ int libcfile_file_open_with_error_code(
 
 		return( -1 );
 	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
 
-		return( -1 );
-	}
+    if (custom_io_file_create_handle_ptr == NULL)
+    {
+      return -1;
+    }
+    
 	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
 	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 ) )
 	{
@@ -386,182 +362,12 @@ int libcfile_file_open_with_error_code(
 
 		return( -1 );
 	}
-	filename_length = narrow_string_length(
-	                   filename );
 
-	if( filename_length > 4 )
-	{
-		if( ( filename[ 0 ] == '\\' )
-		 && ( filename[ 1 ] == '\\' )
-		 && ( filename[ 2 ] == '.' )
-		 && ( filename[ 3 ] == '\\' ) )
-		{
-			/* Ignore \\.\F:\ which is an alternative notation for F:
-			 */
-			if( ( filename_length < 7 )
-			 || ( filename[ 5 ] != ':' )
-			 || ( filename[ 6 ] != '\\' ) )
-			{
-				internal_file->is_device_filename  = 1;
-				internal_file->use_asynchronous_io = 1;
-			}
-		}
-	}
-	flags_and_attributes = FILE_ATTRIBUTE_NORMAL;
+    if (custom_io_file_create_handle_ptr(filename, file_io_access_flags, file_io_shared_flags, file_io_creation_flags, &(internal_file->handle)) != 1)
+    {
+      return -1;
+    }
 
-	if( internal_file->use_asynchronous_io != 0 )
-	{
-		flags_and_attributes |= FILE_FLAG_OVERLAPPED;
-	}
-#if ( WINVER <= 0x0500 )
-	internal_file->handle = libcfile_CreateFileA(
-	                         (LPCSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#else
-	internal_file->handle = CreateFileA(
-	                         (LPCSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#endif
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
-	{
-		*error_code = (uint32_t) GetLastError();
-
-		switch( *error_code )
-		{
-			case ERROR_ACCESS_DENIED:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_ACCESS_DENIED,
-				 "%s: access denied to file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			case ERROR_FILE_NOT_FOUND:
-			case ERROR_PATH_NOT_FOUND:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_INVALID_RESOURCE,
-				 "%s: no such file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			default:
-				libcerror_system_set_error(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_OPEN_FAILED,
-				 *error_code,
-				 "%s: unable to open file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-		}
-		return( -1 );
-	}
-	if( internal_file->is_device_filename != 0 )
-	{
-		read_count = libcfile_internal_file_io_control_read_with_error_code(
-		              internal_file,
-		              FSCTL_ALLOW_EXTENDED_DASD_IO,
-		              NULL,
-		              0,
-		              NULL,
-		              0,
-		              error_code,
-		              error );
-
-		if( read_count == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 "%s: unable to query device for: FSCTL_ALLOW_EXTENDED_DASD_IO.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-#if ( WINVER >= 0x0600 )
-		result = GetFileInformationByHandleEx(
-		          internal_file->handle,
-		          FileAlignmentInfo,
-		          (void *) &file_alignment_information,
-		          (DWORD) sizeof( FILE_ALIGNMENT_INFO ) );
-
-		if( result == FALSE )
-		{
-			*error_code = (uint32_t) GetLastError();
-
-			libcerror_system_set_error(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 *error_code,
-			 "%s: unable to retrieve file alignment information.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-		else if( file_alignment_information.AlignmentRequirement != 0 )
-		{
-			if( libcfile_internal_file_set_block_size(
-			     internal_file,
-			     (size_t) 512,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set block size.",
-				 function );
-
-				return( -1 );
-			}
-		}
-#endif /* ( WINVER >= 0x0600 ) */
-	}
 	if( libcfile_internal_file_get_size(
 	     internal_file,
 	     &( internal_file->size ),
@@ -581,181 +387,6 @@ int libcfile_file_open_with_error_code(
 
 	return( 1 );
 }
-
-#elif defined( HAVE_OPEN )
-
-/* Opens a file
- * This function uses the POSIX open function or equivalent
- * Returns 1 if successful or -1 on error
- */
-int libcfile_file_open_with_error_code(
-     libcfile_file_t *file,
-     const char *filename,
-     int access_flags,
-     uint32_t *error_code,
-     libcerror_error_t **error )
-{
-	libcfile_internal_file_t *internal_file = NULL;
-	static char *function                   = "libcfile_file_open_with_error_code";
-	int file_io_flags                       = 0;
-
-	if( file == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file.",
-		 function );
-
-		return( -1 );
-	}
-	internal_file = (libcfile_internal_file_t *) file;
-
-	if( internal_file->descriptor != -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid file - descriptor value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 ) )
-	{
-		file_io_flags = O_RDWR | O_CREAT;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	{
-		file_io_flags = O_RDONLY;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	{
-		file_io_flags = O_WRONLY | O_CREAT;
-	}
-	else
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported access flags: 0x%02x.",
-		 function,
-		 access_flags );
-
-		return( -1 );
-	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_TRUNCATE ) != 0 ) )
-	{
-		file_io_flags |= O_TRUNC;
-	}
-	if( error_code == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid error code.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( O_CLOEXEC )
-	/* Prevent the file descriptor to remain open across an execve
-	 */
-	file_io_flags |= O_CLOEXEC;
-#endif
-#if defined( HAVE_GLIB_H )
-	internal_file->descriptor = g_open(
-	                             filename,
-	                             file_io_flags,
-	                             0644 );
-#else
-	internal_file->descriptor = open(
-	                             filename,
-	                             file_io_flags,
-	                             0644 );
-#endif
-	if( internal_file->descriptor == -1 )
-	{
-		*error_code = (uint32_t) errno;
-
-		switch( *error_code )
-		{
-			case EACCES:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_ACCESS_DENIED,
-				 "%s: access denied to file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			case ENOENT:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_INVALID_RESOURCE,
-				 "%s: no such file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			default:
-				libcerror_system_set_error(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_OPEN_FAILED,
-				 *error_code,
-				 "%s: unable to open file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-		}
-		return( -1 );
-	}
-	if( libcfile_internal_file_get_size(
-	     internal_file,
-	     &( internal_file->size ),
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve size.",
-		 function );
-
-		return( -1 );
-	}
-	internal_file->access_flags   = access_flags;
-	internal_file->current_offset = 0;
-
-	return( 1 );
-}
-
-#else
-#error Missing file open function
-#endif
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
@@ -790,8 +421,6 @@ int libcfile_file_open_wide(
 	return( 1 );
 }
 
-#if defined( WINAPI )
-
 /* Opens a file
  * This function uses the WINAPI function for Windows XP (0x0501) or later
  * or tries to dynamically call the function for Windows 2000 (0x0500) or earlier
@@ -804,12 +433,6 @@ int libcfile_file_open_wide_with_error_code(
      uint32_t *error_code,
      libcerror_error_t **error )
 {
-#if ( WINVER >= 0x0600 )
-	FILE_ALIGNMENT_INFO file_alignment_information;
-
-	BOOL result                             = 0;
-#endif
-
 	libcfile_internal_file_t *internal_file = NULL;
 	static char *function                   = "libcfile_file_open_wide_with_error_code";
 	DWORD file_io_access_flags              = 0;
@@ -843,17 +466,12 @@ int libcfile_file_open_wide_with_error_code(
 
 		return( -1 );
 	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
 
-		return( -1 );
-	}
+    if (custom_io_file_create_handle_wide_ptr == NULL)
+    {
+      return -1;
+    }
+
 	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
 	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 ) )
 	{
@@ -905,182 +523,12 @@ int libcfile_file_open_wide_with_error_code(
 
 		return( -1 );
 	}
-	filename_length = wide_string_length(
-	                   filename );
-
-	if( filename_length > 4 )
+  
+	if (custom_io_file_create_handle_wide_ptr(filename, file_io_access_flags, file_io_shared_flags, file_io_creation_flags, &internal_file->handle) != 1)
 	{
-		if( ( filename[ 0 ] == (wchar_t) '\\' )
-		 && ( filename[ 1 ] == (wchar_t) '\\' )
-		 && ( filename[ 2 ] == (wchar_t) '.' )
-		 && ( filename[ 3 ] == (wchar_t) '\\' ) )
-		{
-			/* Ignore \\.\F:\ which is an alternative notation for F:
-			 */
-			if( ( filename_length < 7 )
-			 || ( filename[ 5 ] != (wchar_t) ':' )
-			 || ( filename[ 6 ] != (wchar_t) '\\' ) )
-			{
-				internal_file->is_device_filename  = 1;
-				internal_file->use_asynchronous_io = 1;
-			}
-		}
+	  return -1;
 	}
-	flags_and_attributes = FILE_ATTRIBUTE_NORMAL;
-
-	if( internal_file->use_asynchronous_io != 0 )
-	{
-		flags_and_attributes |= FILE_FLAG_OVERLAPPED;
-	}
-#if ( WINVER <= 0x0500 )
-	internal_file->handle = libcfile_CreateFileW(
-	                         (LPCWSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#else
-	internal_file->handle = CreateFileW(
-	                         (LPCWSTR) filename,
-	                         file_io_access_flags,
-	                         file_io_shared_flags,
-	                         NULL,
-	                         file_io_creation_flags,
-	                         flags_and_attributes,
-	                         NULL );
-#endif
-	if( internal_file->handle == INVALID_HANDLE_VALUE )
-	{
-		*error_code = (uint32_t) GetLastError();
-
-		switch( *error_code )
-		{
-			case ERROR_ACCESS_DENIED:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_ACCESS_DENIED,
-				 "%s: access denied to file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			case ERROR_FILE_NOT_FOUND:
-			case ERROR_PATH_NOT_FOUND:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_INVALID_RESOURCE,
-				 "%s: no such file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			default:
-				libcerror_system_set_error(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_OPEN_FAILED,
-				 *error_code,
-				 "%s: unable to open file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-		}
-		return( -1 );
-	}
-	if( internal_file->is_device_filename != 0 )
-	{
-		read_count = libcfile_internal_file_io_control_read_with_error_code(
-		              internal_file,
-		              FSCTL_ALLOW_EXTENDED_DASD_IO,
-		              NULL,
-		              0,
-		              NULL,
-		              0,
-		              error_code,
-		              error );
-
-		if( read_count == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 "%s: unable to query device for: FSCTL_ALLOW_EXTENDED_DASD_IO.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-#if ( WINVER >= 0x0600 )
-		result = GetFileInformationByHandleEx(
-		          internal_file->handle,
-		          FileAlignmentInfo,
-		          (void *) &file_alignment_information,
-		          (DWORD) sizeof( FILE_ALIGNMENT_INFO ) );
-
-		if( result == FALSE )
-		{
-			*error_code = (uint32_t) GetLastError();
-
-			libcerror_system_set_error(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_IOCTL_FAILED,
-			 *error_code,
-			 "%s: unable to retrieve file alignment information.",
-			 function );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				if( ( error != NULL )
-				 && ( *error != NULL ) )
-				{
-					libcnotify_print_error_backtrace(
-					 *error );
-				}
-			}
-#endif
-			libcerror_error_free(
-			 error );
-		}
-		else if( file_alignment_information.AlignmentRequirement != 0 )
-		{
-			if( libcfile_internal_file_set_block_size(
-			     internal_file,
-			     (size_t) 512,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set block size.",
-				 function );
-
-				return( -1 );
-			}
-		}
-#endif /* ( WINVER >= 0x0600 ) */
-	}
+  
 	if( libcfile_internal_file_get_size(
 	     internal_file,
 	     &( internal_file->size ),
@@ -1101,246 +549,7 @@ int libcfile_file_open_wide_with_error_code(
 	return( 1 );
 }
 
-#elif defined( HAVE_OPEN )
-
-/* Opens a file
- * This function uses the POSIX open function or equivalent
- * Returns 1 if successful or -1 on error
- */
-int libcfile_file_open_wide_with_error_code(
-     libcfile_file_t *file,
-     const wchar_t *filename,
-     int access_flags,
-     uint32_t *error_code,
-     libcerror_error_t **error )
-{
-	libcfile_internal_file_t *internal_file = NULL;
-	static char *function                   = "libcfile_file_open_wide_with_error_code";
-	char *narrow_filename                   = NULL;
-	size_t filename_size                    = 0;
-	size_t narrow_filename_size             = 0;
-	int file_io_flags                       = 0;
-
-	if( file == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file.",
-		 function );
-
-		return( -1 );
-	}
-	internal_file = (libcfile_internal_file_t *) file;
-
-	if( internal_file->descriptor != -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid file - descriptor value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid filename.",
-		 function );
-
-		return( -1 );
-	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 ) )
-	{
-		file_io_flags = O_RDWR | O_CREAT;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_READ ) != 0 )
-	{
-		file_io_flags = O_RDONLY;
-	}
-	else if( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	{
-		file_io_flags = O_WRONLY | O_CREAT;
-	}
-	else
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: unsupported access flags: 0x%02x.",
-		 function,
-		 access_flags );
-
-		return( -1 );
-	}
-	if( ( ( access_flags & LIBCFILE_ACCESS_FLAG_WRITE ) != 0 )
-	 && ( ( access_flags & LIBCFILE_ACCESS_FLAG_TRUNCATE ) != 0 ) )
-	{
-		file_io_flags |= O_TRUNC;
-	}
-	if( error_code == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid error code.",
-		 function );
-
-		return( -1 );
-	}
-	filename_size = 1 + wide_string_length(
-	                     filename );
-
-	if( libcfile_system_string_size_from_wide_string(
-	     filename,
-	     filename_size,
-	     &narrow_filename_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to determine narrow character filename size.",
-		 function );
-
-		goto on_error;
-	}
-	narrow_filename = narrow_string_allocate(
-	                   narrow_filename_size );
-
-	if( narrow_filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create narrow character filename.",
-		 function );
-
-		goto on_error;
-	}
-	if( libcfile_system_string_copy_from_wide_string(
-	     narrow_filename,
-	     narrow_filename_size,
-	     filename,
-	     filename_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_CONVERSION,
-		 LIBCERROR_CONVERSION_ERROR_GENERIC,
-		 "%s: unable to set narrow character filename.",
-		 function );
-
-		goto on_error;
-	}
-#if defined( O_CLOEXEC )
-	/* Prevent the file descriptor to remain open across an execve
-	 */
-	file_io_flags |= O_CLOEXEC;
-#endif
-#if defined( HAVE_GLIB_H )
-	internal_file->descriptor = g_open(
-	                             narrow_filename,
-	                             file_io_flags,
-	                             0644 );
-#else
-	internal_file->descriptor = open(
-	                             narrow_filename,
-	                             file_io_flags,
-	                             0644 );
-#endif
-
-	memory_free(
-	 narrow_filename );
-
-	narrow_filename = NULL;
-
-	if( internal_file->descriptor == -1 )
-	{
-		*error_code = (uint32_t) errno;
-
-		switch( *error_code )
-		{
-			case EACCES:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_ACCESS_DENIED,
-				 "%s: access denied to file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			case ENOENT:
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_INVALID_RESOURCE,
-				 "%s: no such file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-
-			default:
-				libcerror_system_set_error(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_OPEN_FAILED,
-				 *error_code,
-				 "%s: unable to open file: %" PRIs_SYSTEM ".",
-				 function,
-				 filename );
-
-				break;
-		}
-		goto on_error;
-	}
-	if( libcfile_internal_file_get_size(
-	     internal_file,
-	     &( internal_file->size ),
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve size.",
-		 function );
-
-		goto on_error;
-	}
-	return( 1 );
-
-on_error:
-	if( narrow_filename != NULL )
-	{
-		memory_free(
-		 narrow_filename );
-	}
-	return( -1 );
-}
-
-#else
-#error Missing file open wide function
-#endif
-
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
-
-#if defined( WINAPI )
 
 /* Closes the file
  * This function uses the WINAPI function for Windows 2000 (0x0500) or later
@@ -1367,30 +576,20 @@ int libcfile_file_close(
 
 		return( -1 );
 	}
+
+    if (custom_io_file_close_handle_ptr == NULL)
+    {
+      return -1;
+    }
+
 	internal_file = (libcfile_internal_file_t *) file;
 
 	if( internal_file->handle != INVALID_HANDLE_VALUE )
 	{
-#if ( WINVER <= 0x0500 )
-		result = libcfile_CloseHandle(
-		          internal_file->handle );
-#else
-		result = CloseHandle(
-		          internal_file->handle );
-#endif
+		result = custom_io_file_close_handle_ptr(internal_file->handle );
 		if( result == 0 )
 		{
-			error_code = GetLastError();
-
-			libcerror_system_set_error(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
-			 error_code,
-			 "%s: unable to close file.",
-			 function );
-
-			return( -1 );
+		  return( -1 );
 		}
 		internal_file->handle              = INVALID_HANDLE_VALUE;
 		internal_file->is_device_filename  = 0;
@@ -1418,76 +617,6 @@ int libcfile_file_close(
 	}
 	return( 0 );
 }
-
-#elif defined( HAVE_CLOSE )
-
-/* Closes the file
- * This function uses the POSIX close function or equivalent
- * Returns 0 if successful or -1 on error
- */
-int libcfile_file_close(
-     libcfile_file_t *file,
-     libcerror_error_t **error )
-{
-	libcfile_internal_file_t *internal_file = NULL;
-	static char *function                   = "libcfile_file_close";
-
-	if( file == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid file.",
-		 function );
-
-		return( -1 );
-	}
-	internal_file = (libcfile_internal_file_t *) file;
-
-	if( internal_file->descriptor != -1 )
-	{
-		if( close(
-		     internal_file->descriptor ) != 0 )
-		{
-			libcerror_system_set_error(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_IO,
-			 LIBCERROR_IO_ERROR_CLOSE_FAILED,
-			 errno,
-			 "%s: unable to close file.",
-			 function );
-
-			return( -1 );
-		}
-		internal_file->descriptor     = -1;
-		internal_file->access_flags   = 0;
-		internal_file->size           = 0;
-		internal_file->current_offset = 0;
-	}
-	if( internal_file->block_data != NULL )
-	{
-		if( memory_set(
-		     internal_file->block_data,
-		     0,
-		     internal_file->block_size ) == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_MEMORY,
-			 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear block data.",
-			 function );
-
-			return( -1 );
-		}
-	}
-	return( 0 );
-}
-
-#else
-#error Missing file close function
-#endif
 
 /* Reads a buffer from the file
  * Returns the number of bytes read if successful, or -1 on error
@@ -1605,110 +734,17 @@ ssize_t libcfile_internal_file_read_buffer_at_offset_with_error_code(
 
 		return( -1 );
 	}
-	/* For Windows devices we need to use asynchronous IO here
-	 * otherwise the ReadFile function can return ERROR_INVALID_PARAMETER
-	 * if the device is read concurrently and the the block is too large
-	 * to fill. Using smaller block sizes decreases the likelyhood but
-	 * also impacts the performance.
-	 */
-	if( internal_file->use_asynchronous_io != 0 )
-	{
-		if( memory_set(
-		     &overlapped_data,
-		     0,
-		     sizeof( OVERLAPPED ) ) == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_MEMORY,
-			 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-			 "%s: unable to clear overlapped data.",
-			 function );
 
-			return( -1 );
-		}
-		overlapped = &overlapped_data;
+    if (custom_io_file_read_ptr == NULL)
+    {
+      return -1;
+    }
 
-		overlapped->Offset     = (DWORD) ( 0x0ffffffffUL & current_offset );
-		overlapped->OffsetHigh = (DWORD) ( current_offset >> 32 );
-	}
-#if ( WINVER <= 0x0500 )
-	result = libcfile_ReadFile(
-		  internal_file->handle,
-		  buffer,
-		  (DWORD) size,
-		  &read_count,
-		  overlapped );
-#else
-	result = ReadFile(
-		  internal_file->handle,
-		  (VOID *) buffer,
-		  (DWORD) size,
-		  &read_count,
-		  overlapped );
-#endif
-	if( result == 0 )
-	{
-		*error_code = (uint32_t) GetLastError();
-
-		switch( *error_code )
-		{
-			case ERROR_HANDLE_EOF:
-				break;
-
-			case ERROR_IO_PENDING:
-				io_pending = TRUE;
-				break;
-
-			default:
-				libcerror_system_set_error(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 *error_code,
-				 "%s: unable to read from file.",
-				 function );
-
-				return( -1 );
-		}
-	}
-	if( io_pending == TRUE )
-	{
-#if ( WINVER <= 0x0500 )
-		result = libcfile_GetOverlappedResult(
-			  internal_file->handle,
-			  overlapped,
-			  &read_count,
-			  TRUE );
-#else
-		result = GetOverlappedResult(
-			  internal_file->handle,
-			  overlapped,
-			  &read_count,
-			  TRUE );
-#endif
-		if( result == 0 )
-		{
-			*error_code = (uint32_t) GetLastError();
-
-			switch( *error_code )
-			{
-				case ERROR_HANDLE_EOF:
-					break;
-
-				default:
-					libcerror_system_set_error(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_IO,
-					 LIBCERROR_IO_ERROR_READ_FAILED,
-					 *error_code,
-					 "%s: unable to read from file - overlapped result.",
-					 function );
-
-					return( -1 );
-			}
-		}
-	}
+    if (custom_io_file_read_ptr(internal_file->handle, current_offset, buffer, size, &read_count) != 1)
+    {
+      return -1;
+    }
+    
 	return( (ssize_t) read_count );
 }
 

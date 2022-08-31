@@ -50,17 +50,28 @@ int libcfile_set_codepage(
 
 #endif /* !defined( HAVE_LOCAL_LIBCFILE ) */
 
-typedef int (*file_exists_ptr)( const char *, libcerror_error_t **);
-typedef int (*file_exists_wide_ptr)( const wchar_t *, libcerror_error_t **);
+typedef int (*file_exists_ptr)( const char *);
+typedef int (*file_exists_wide_ptr)( const wchar_t *);
+typedef int (*file_create_handle_ptr)(const char*, uint32_t, uint32_t, uint32_t, intptr_t**);
+typedef int (*file_create_handle_wide_ptr)(const wchar_t*, uint32_t, uint32_t, uint32_t, intptr_t**);
+typedef int (*file_close_handle_ptr)(intptr_t*);
+typedef int (*file_read_ptr)(intptr_t*, int64_t, char*, int, int*);
 
 LIBCFILE_EXTERN_VARIABLE file_exists_ptr custom_io_file_exists_ptr;
 LIBCFILE_EXTERN_VARIABLE file_exists_wide_ptr custom_io_file_exists_wide_ptr;
+LIBCFILE_EXTERN_VARIABLE file_create_handle_ptr custom_io_file_create_handle_ptr;
+LIBCFILE_EXTERN_VARIABLE file_create_handle_wide_ptr custom_io_file_create_handle_wide_ptr;
+LIBCFILE_EXTERN_VARIABLE file_close_handle_ptr custom_io_file_close_handle_ptr;
+LIBCFILE_EXTERN_VARIABLE file_read_ptr custom_io_file_read_ptr;
 
 LIBCFILE_EXTERN \
 int libcfile_set_io_backend(
   file_exists_ptr file_exists,
-  file_exists_wide_ptr file_exists_wide
-  );
+  file_exists_wide_ptr file_exists_wide,
+  file_create_handle_ptr file_create_handle,
+  file_create_handle_wide_ptr file_create_handle_wide,
+  file_close_handle_ptr file_close_handle,
+  file_read_ptr file_read );
 
 LIBCFILE_EXTERN \
 int libcfile_file_exists(

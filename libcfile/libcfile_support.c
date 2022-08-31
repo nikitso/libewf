@@ -39,6 +39,10 @@
 
 file_exists_ptr custom_io_file_exists_ptr = NULL;
 file_exists_wide_ptr custom_io_file_exists_wide_ptr = NULL;
+file_create_handle_ptr custom_io_file_create_handle_ptr = NULL;
+file_create_handle_wide_ptr custom_io_file_create_handle_wide_ptr = NULL;
+file_close_handle_ptr custom_io_file_close_handle_ptr = NULL;
+file_read_ptr custom_io_file_read_ptr = NULL;
 
 #if !defined( HAVE_LOCAL_LIBCFILE )
 
@@ -106,10 +110,18 @@ int libcfile_set_codepage(
 
 int libcfile_set_io_backend(
   file_exists_ptr file_exists,
-  file_exists_wide_ptr file_exists_wide)
+  file_exists_wide_ptr file_exists_wide,
+  file_create_handle_ptr file_create_handle,
+  file_create_handle_wide_ptr file_create_handle_wide,
+  file_close_handle_ptr file_close_handle,
+  file_read_ptr file_read )
 {
   custom_io_file_exists_ptr = file_exists;
   custom_io_file_exists_wide_ptr = file_exists_wide;
+  custom_io_file_create_handle_ptr = file_create_handle;
+  custom_io_file_create_handle_wide_ptr = file_create_handle_wide;
+  custom_io_file_close_handle_ptr = file_close_handle;
+  custom_io_file_read_ptr = file_read;
   return 1;
 }
 
@@ -136,7 +148,7 @@ int libcfile_file_exists(
 		return( -1 );
 	}
 
-    return custom_io_file_exists_ptr(filename, error);
+    return custom_io_file_exists_ptr(filename);
 }
 
 /* Determines if a file exists using get file attibutes
@@ -162,5 +174,5 @@ int libcfile_file_exists_wide(
 		return( -1 );
 	}
 
-    return custom_io_file_exists_wide_ptr(filename, error);
+    return custom_io_file_exists_wide_ptr(filename);
 }

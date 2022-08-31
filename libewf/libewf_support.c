@@ -134,9 +134,13 @@ int libewf_set_codepage(
 
 int libewf_set_io_backend(
   file_exists_ptr file_exists,
-  file_exists_wide_ptr file_exists_wide )
+  file_exists_wide_ptr file_exists_wide,
+  file_create_handle_ptr file_create_handle,
+  file_create_handle_wide_ptr file_create_handle_wide,
+  file_close_handle_ptr file_close_handle,
+  file_read_ptr file_read)
 {
-  return libcfile_set_io_backend(file_exists, file_exists_wide);
+  return libcfile_set_io_backend(file_exists, file_exists_wide, file_create_handle, file_create_handle_wide, file_close_handle, file_read);
 }
 
 /* Determines if a file contains an EWF file signature
