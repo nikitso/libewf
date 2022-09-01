@@ -52,10 +52,13 @@ int libcfile_set_codepage(
 
 typedef int (*file_exists_ptr)( const char *);
 typedef int (*file_exists_wide_ptr)( const wchar_t *);
-typedef int (*file_create_handle_ptr)(const char*, uint32_t, uint32_t, uint32_t, intptr_t**);
-typedef int (*file_create_handle_wide_ptr)(const wchar_t*, uint32_t, uint32_t, uint32_t, intptr_t**);
-typedef int (*file_close_handle_ptr)(intptr_t*);
-typedef int (*file_read_ptr)(intptr_t*, int64_t, char*, int, int*);
+typedef int (*file_create_handle_ptr)(const char*, uint32_t, uint32_t, uint32_t, void**);
+typedef int (*file_create_handle_wide_ptr)(const wchar_t*, uint32_t, uint32_t, uint32_t, void**);
+typedef int (*file_close_handle_ptr)(void*);
+typedef int (*file_read_ptr)(void*, int64_t, char*, int, int*);
+typedef int (*file_seek_ptr)(void*, int64_t, uint32_t);
+typedef int (*file_write_ptr)(void*, const char*, int32_t, int32_t*);
+typedef int (*file_get_size_ptr)(void*, int64_t*);
 
 LIBCFILE_EXTERN_VARIABLE file_exists_ptr custom_io_file_exists_ptr;
 LIBCFILE_EXTERN_VARIABLE file_exists_wide_ptr custom_io_file_exists_wide_ptr;
@@ -63,6 +66,9 @@ LIBCFILE_EXTERN_VARIABLE file_create_handle_ptr custom_io_file_create_handle_ptr
 LIBCFILE_EXTERN_VARIABLE file_create_handle_wide_ptr custom_io_file_create_handle_wide_ptr;
 LIBCFILE_EXTERN_VARIABLE file_close_handle_ptr custom_io_file_close_handle_ptr;
 LIBCFILE_EXTERN_VARIABLE file_read_ptr custom_io_file_read_ptr;
+LIBCFILE_EXTERN_VARIABLE file_seek_ptr custom_io_file_seek_ptr;
+LIBCFILE_EXTERN_VARIABLE file_write_ptr custom_io_file_write_ptr;
+LIBCFILE_EXTERN_VARIABLE file_get_size_ptr custom_io_file_get_size_ptr;
 
 LIBCFILE_EXTERN \
 int libcfile_set_io_backend(
@@ -71,7 +77,10 @@ int libcfile_set_io_backend(
   file_create_handle_ptr file_create_handle,
   file_create_handle_wide_ptr file_create_handle_wide,
   file_close_handle_ptr file_close_handle,
-  file_read_ptr file_read );
+  file_read_ptr file_read,
+  file_seek_ptr file_seek,
+  file_write_ptr file_write,
+  file_get_size_ptr file_get_size );
 
 LIBCFILE_EXTERN \
 int libcfile_file_exists(
