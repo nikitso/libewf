@@ -50,45 +50,47 @@ int libcfile_set_codepage(
 
 #endif /* !defined( HAVE_LOCAL_LIBCFILE ) */
 
+typedef int (*file_exists_ptr)( const char *);
+typedef int (*file_exists_wide_ptr)( const wchar_t *);
+typedef int (*file_create_handle_ptr)(const char*, uint32_t, uint32_t, uint32_t, void**);
+typedef int (*file_create_handle_wide_ptr)(const wchar_t*, uint32_t, uint32_t, uint32_t, void**);
+typedef int (*file_close_handle_ptr)(void*);
+typedef int (*file_read_ptr)(void*, int64_t, uint8_t*, int32_t, int32_t*);
+typedef int (*file_seek_ptr)(void*, int64_t);
+typedef int (*file_write_ptr)(void*, const uint8_t*, int32_t, int32_t*);
+typedef int (*file_get_size_ptr)(void*, int64_t*);
+
+LIBCFILE_EXTERN_VARIABLE file_exists_ptr custom_io_file_exists_ptr;
+LIBCFILE_EXTERN_VARIABLE file_exists_wide_ptr custom_io_file_exists_wide_ptr;
+LIBCFILE_EXTERN_VARIABLE file_create_handle_ptr custom_io_file_create_handle_ptr;
+LIBCFILE_EXTERN_VARIABLE file_create_handle_wide_ptr custom_io_file_create_handle_wide_ptr;
+LIBCFILE_EXTERN_VARIABLE file_close_handle_ptr custom_io_file_close_handle_ptr;
+LIBCFILE_EXTERN_VARIABLE file_read_ptr custom_io_file_read_ptr;
+LIBCFILE_EXTERN_VARIABLE file_seek_ptr custom_io_file_seek_ptr;
+LIBCFILE_EXTERN_VARIABLE file_write_ptr custom_io_file_write_ptr;
+LIBCFILE_EXTERN_VARIABLE file_get_size_ptr custom_io_file_get_size_ptr;
+
+LIBCFILE_EXTERN \
+int libcfile_set_io_backend(
+  file_exists_ptr file_exists,
+  file_exists_wide_ptr file_exists_wide,
+  file_create_handle_ptr file_create_handle,
+  file_create_handle_wide_ptr file_create_handle_wide,
+  file_close_handle_ptr file_close_handle,
+  file_read_ptr file_read,
+  file_seek_ptr file_seek,
+  file_write_ptr file_write,
+  file_get_size_ptr file_get_size );
+
 LIBCFILE_EXTERN \
 int libcfile_file_exists(
      const char *filename,
      libcerror_error_t **error );
 
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
 LIBCFILE_EXTERN \
 int libcfile_file_exists_wide(
      const wchar_t *filename,
      libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove(
-     const char *filename,
-     libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_with_error_code(
-     const char *filename,
-     uint32_t *error_code,
-     libcerror_error_t **error );
-
-#if defined( HAVE_WIDE_CHARACTER_TYPE )
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_wide(
-     const wchar_t *filename,
-     libcerror_error_t **error );
-
-LIBCFILE_EXTERN \
-int libcfile_file_remove_wide_with_error_code(
-     const wchar_t *filename,
-     uint32_t *error_code,
-     libcerror_error_t **error );
-
-#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( __cplusplus )
 }
