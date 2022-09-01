@@ -52,22 +52,6 @@ struct libcfile_internal_file
   /* The current offset
    */
   off64_t current_offset;
-
-  /* The block size
-   */
-  size_t block_size;
-
-  /* The block data
-   */
-  uint8_t* block_data;
-
-  /* The block data offset
-   */
-  size_t block_data_offset;
-
-  /* The block data size
-   */
-  size_t block_data_size;
 };
 
 LIBCFILE_EXTERN
@@ -188,17 +172,6 @@ LIBCFILE_EXTERN
 int libcfile_file_get_size(
   libcfile_file_t* file,
   size64_t* size,
-  libcerror_error_t** error);
-
-int libcfile_internal_file_set_block_size(
-  libcfile_internal_file_t* internal_file,
-  size_t block_size,
-  libcerror_error_t** error);
-
-LIBCFILE_EXTERN
-int libcfile_file_set_block_size(
-  libcfile_file_t* file,
-  size_t block_size,
   libcerror_error_t** error);
 
 #if defined( __cplusplus )

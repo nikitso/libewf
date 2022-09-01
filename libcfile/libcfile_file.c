@@ -530,23 +530,7 @@ int libcfile_file_close(
     internal_file->size = 0;
     internal_file->current_offset = 0;
   }
-  if (internal_file->block_data != NULL)
-  {
-    if (memory_set(
-      internal_file->block_data,
-      0,
-      internal_file->block_size) == NULL)
-    {
-      libcerror_error_set(
-        error,
-        LIBCERROR_ERROR_DOMAIN_MEMORY,
-        LIBCERROR_MEMORY_ERROR_SET_FAILED,
-        "%s: unable to clear block data.",
-        function);
-
-      return (-1);
-    }
-  }
+  
   return (0);
 }
 
@@ -690,7 +674,6 @@ ssize_t libcfile_file_read_buffer_with_error_code(
   static char* function = "libcfile_file_read_buffer_with_error_code";
   size_t buffer_offset = 0;
   size_t read_size = 0;
-  size_t read_size_remainder = 0;
   ssize_t read_count = 0;
   BOOL result = FALSE;
 
@@ -755,20 +738,7 @@ ssize_t libcfile_file_read_buffer_with_error_code(
 
     return (-1);
   }
-  if (internal_file->block_size != 0)
-  {
-    if (internal_file->block_data == NULL)
-    {
-      libcerror_error_set(
-        error,
-        LIBCERROR_ERROR_DOMAIN_RUNTIME,
-        LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-        "%s: invalid file - missing block data.",
-        function);
-
-      return (-1);
-    }
-  }
+  
   if (internal_file->current_offset < 0)
   {
     libcerror_error_set(
@@ -789,91 +759,9 @@ ssize_t libcfile_file_read_buffer_with_error_code(
   {
     size = (size_t)(internal_file->size - internal_file->current_offset);
   }
-  if (internal_file->block_size != 0)
-  {
-    /* Read a block of data to align with the next block
-     */
-    if ((internal_file->block_data_offset > 0)
-      && (internal_file->block_data_size == 0))
-    {
-      if (memory_set(
-        internal_file->block_data,
-        0,
-        internal_file->block_size) == NULL)
-      {
-        libcerror_error_set(
-          error,
-          LIBCERROR_ERROR_DOMAIN_MEMORY,
-          LIBCERROR_MEMORY_ERROR_SET_FAILED,
-          "%s: unable to clear block data.",
-          function);
-
-        return (-1);
-      }
-      read_count = libcfile_internal_file_read_buffer_at_offset_with_error_code(
-        internal_file,
-        internal_file->current_offset - internal_file->block_data_offset,
-        internal_file->block_data,
-        internal_file->block_size,
-        error_code,
-        error);
-
-      if (read_count != (ssize_t)internal_file->block_size)
-      {
-        libcerror_error_set(
-          error,
-          LIBCERROR_ERROR_DOMAIN_IO,
-          LIBCERROR_IO_ERROR_READ_FAILED,
-          "%s: invalid read count: %" PRIzd " returned.",
-          function,
-          read_count);
-
-        return (-1);
-      }
-      internal_file->block_data_size = (size_t)read_count;
-    }
-    if ((internal_file->block_data_offset > 0)
-      && (internal_file->block_data_offset < internal_file->block_data_size))
-    {
-      read_size = internal_file->block_data_size - internal_file->block_data_offset;
-
-      if (read_size > size)
-      {
-        read_size = size;
-      }
-      if (memory_copy(
-        buffer,
-        &( internal_file->block_data[ internal_file->block_data_offset ] ),
-        read_size) == NULL)
-      {
-        libcerror_error_set(
-          error,
-          LIBCERROR_ERROR_DOMAIN_MEMORY,
-          LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-          "%s: unable to copy block data.",
-          function);
-
-        return (-1);
-      }
-      buffer_offset += read_size;
-      size -= read_size;
-      internal_file->current_offset += read_size;
-      internal_file->block_data_offset += read_size;
-    }
-    if (size == 0)
-    {
-      return ((ssize_t)buffer_offset);
-    }
-  }
+  
   read_size = size;
-
-  if (internal_file->block_size != 0)
-  {
-    /* Read block aligned
-     */
-    read_size_remainder = read_size % internal_file->block_size;
-    read_size -= read_size_remainder;
-  }
+  
   if (read_size > 0)
   {
     read_count = libcfile_internal_file_read_buffer_at_offset_with_error_code(
@@ -884,13 +772,7 @@ ssize_t libcfile_file_read_buffer_with_error_code(
       error_code,
       error);
 
-    if ((internal_file->block_size == 0)
-      && (read_count < 0))
-    {
-      result = 0;
-    }
-    else if ((internal_file->block_size != 0)
-      && (read_count != (ssize_t)read_size))
+    if (read_count < 0)
     {
       result = 0;
     }
@@ -913,65 +795,7 @@ ssize_t libcfile_file_read_buffer_with_error_code(
     buffer_offset += (size_t)read_count;
     internal_file->current_offset += read_count;
   }
-  /* Read the non-aligned remainder
-   */
-  if (read_size_remainder > 0)
-  {
-    if (memory_set(
-      internal_file->block_data,
-      0,
-      internal_file->block_size) == NULL)
-    {
-      libcerror_error_set(
-        error,
-        LIBCERROR_ERROR_DOMAIN_MEMORY,
-        LIBCERROR_MEMORY_ERROR_SET_FAILED,
-        "%s: unable to clear block data.",
-        function);
-
-      return (-1);
-    }
-    read_count = libcfile_internal_file_read_buffer_at_offset_with_error_code(
-      internal_file,
-      internal_file->current_offset,
-      internal_file->block_data,
-      internal_file->block_size,
-      error_code,
-      error);
-
-    if (read_count != (ssize_t)internal_file->block_size)
-    {
-      libcerror_error_set(
-        error,
-        LIBCERROR_ERROR_DOMAIN_IO,
-        LIBCERROR_IO_ERROR_READ_FAILED,
-        "%s: invalid read count: %" PRIzd " returned.",
-        function,
-        read_count);
-
-      return (-1);
-    }
-    internal_file->block_data_offset = 0;
-    internal_file->block_data_size = (size_t)read_count;
-
-    if (memory_copy(
-      &( buffer[ buffer_offset ] ),
-      internal_file->block_data,
-      read_size_remainder) == NULL)
-    {
-      libcerror_error_set(
-        error,
-        LIBCERROR_ERROR_DOMAIN_MEMORY,
-        LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-        "%s: unable to copy block data.",
-        function);
-
-      return (-1);
-    }
-    buffer_offset += read_size_remainder;
-    internal_file->current_offset += read_size_remainder;
-    internal_file->block_data_offset += read_size_remainder;
-  }
+  
   return ((ssize_t)buffer_offset);
 }
 
@@ -1127,8 +951,6 @@ off64_t libcfile_file_seek_offset(
 {
   libcfile_internal_file_t* internal_file = NULL;
   static char* function = "libcfile_file_seek_offset";
-  off64_t offset_remainder = 0;
-  DWORD move_method = 0;
 
   if (file == NULL)
   {
@@ -1183,46 +1005,22 @@ off64_t libcfile_file_seek_offset(
 
     return (-1);
   }
-  if (internal_file->block_size != 0)
+  
+  if (whence == SEEK_CUR)
   {
-    if (whence == SEEK_CUR)
-    {
-      offset += internal_file->current_offset;
-    }
-    else if (whence == SEEK_END)
-    {
-      offset += internal_file->size;
-    }
-    whence = SEEK_SET;
-    offset_remainder = offset % internal_file->block_size;
-    offset -= offset_remainder;
-  }
-  if (whence == SEEK_SET)
-  {
-    move_method = FILE_BEGIN;
-  }
-  else if (whence == SEEK_CUR)
-  {
-    move_method = FILE_CURRENT;
+    offset += internal_file->current_offset;
   }
   else if (whence == SEEK_END)
   {
-    move_method = FILE_END;
+    offset += internal_file->size;
   }
-
-  if (custom_io_file_seek_ptr(internal_file->custom_handle, offset, move_method) != 1)
+    
+  if (custom_io_file_seek_ptr(internal_file->custom_handle, offset) != 1)
   {
     return -1;
   }
 
   internal_file->current_offset = offset;
-
-  if (internal_file->block_size != 0)
-  {
-    internal_file->current_offset += offset_remainder;
-    internal_file->block_data_offset = (size_t)offset_remainder;
-    internal_file->block_data_size = 0;
-  }
   return (internal_file->current_offset);
 }
 
@@ -1401,186 +1199,5 @@ int libcfile_file_get_size(
   }
   *size = internal_file->size;
 
-  return (1);
-}
-
-/* Sets the block size for the read and seek operations
- * A block size of 0 represents no block-based operations
- * The total size must be a multitude of block size
- * Returns 1 if successful or -1 on error
- */
-int libcfile_internal_file_set_block_size(
-  libcfile_internal_file_t* internal_file,
-  size_t block_size,
-  libcerror_error_t** error)
-{
-  static char* function = "libcfile_internal_file_set_block_size";
-
-  if (internal_file == NULL)
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-      LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-      "%s: invalid file.",
-      function);
-
-    return (-1);
-  }
-#if defined( WINAPI ) && ( UINT32_MAX < SSIZE_MAX )
-  if (block_size > (size_t)UINT32_MAX)
-#else
-	if( block_size > (size_t) SSIZE_MAX )
-#endif
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-      LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-      "%s: invalid block size value exceeds maximum.",
-      function);
-
-    return (-1);
-  }
-  if (internal_file->block_data != NULL)
-  {
-    if (block_size != internal_file->block_size)
-    {
-      memory_free(
-        internal_file->block_data);
-
-      internal_file->block_data = NULL;
-      internal_file->block_data_size = 0;
-    }
-  }
-  if (internal_file->block_data == NULL)
-  {
-    if (block_size > 0)
-    {
-      internal_file->block_data = (uint8_t*)memory_allocate(
-        sizeof( uint8_t ) * block_size);
-
-      if (internal_file->block_data == NULL)
-      {
-        libcerror_error_set(
-          error,
-          LIBCERROR_ERROR_DOMAIN_MEMORY,
-          LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-          "%s: unable to create block data.",
-          function);
-
-        return (-1);
-      }
-      if (memory_set(
-        internal_file->block_data,
-        0,
-        block_size) == NULL)
-      {
-        libcerror_error_set(
-          error,
-          LIBCERROR_ERROR_DOMAIN_MEMORY,
-          LIBCERROR_MEMORY_ERROR_SET_FAILED,
-          "%s: unable to clear block data.",
-          function);
-
-        return (-1);
-      }
-    }
-    internal_file->block_size = block_size;
-  }
-  return (1);
-}
-
-/* Sets the block size for the read and seek operations
- * A block size of 0 represents no block-based operations
- * The total size must be a multitude of block size
- * Returns 1 if successful or -1 on error
- */
-int libcfile_file_set_block_size(
-  libcfile_file_t* file,
-  size_t block_size,
-  libcerror_error_t** error)
-{
-  libcfile_internal_file_t* internal_file = NULL;
-  static char* function = "libcfile_file_set_block_size";
-
-  if (file == NULL)
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-      LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-      "%s: invalid file.",
-      function);
-
-    return (-1);
-  }
-  internal_file = (libcfile_internal_file_t*)file;
-
-  if ((internal_file->access_flags & LIBCFILE_ACCESS_FLAG_WRITE) != 0)
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-      LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-      "%s: setting block size not supported with write access.",
-      function);
-
-    return (-1);
-  }
-
-  if (internal_file->custom_handle == NULL)
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_RUNTIME,
-      LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-      "%s: invalid file - missing handle.",
-      function);
-
-    return (-1);
-  }
-
-#if defined( WINAPI ) && ( UINT32_MAX < SSIZE_MAX )
-  if (block_size > (size_t)UINT32_MAX)
-#else
-	if( block_size > (size_t) SSIZE_MAX )
-#endif
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-      LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-      "%s: invalid block size value exceeds maximum.",
-      function);
-
-    return (-1);
-  }
-  if ((block_size != 0)
-    && ((internal_file->size % block_size) != 0))
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_RUNTIME,
-      LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-      "%s: invalid block size value out of bounds.",
-      function);
-
-    return (-1);
-  }
-  if (libcfile_internal_file_set_block_size(
-    internal_file,
-    block_size,
-    error) != 1)
-  {
-    libcerror_error_set(
-      error,
-      LIBCERROR_ERROR_DOMAIN_RUNTIME,
-      LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-      "%s: unable to set block size.",
-      function);
-
-    return (-1);
-  }
   return (1);
 }

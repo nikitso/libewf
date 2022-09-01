@@ -56,7 +56,7 @@ typedef int (*file_create_handle_ptr)(const char*, uint32_t, uint32_t, uint32_t,
 typedef int (*file_create_handle_wide_ptr)(const wchar_t*, uint32_t, uint32_t, uint32_t, void**);
 typedef int (*file_close_handle_ptr)(void*);
 typedef int (*file_read_ptr)(void*, int64_t, uint8_t*, int32_t, int32_t*);
-typedef int (*file_seek_ptr)(void*, int64_t, uint32_t);
+typedef int (*file_seek_ptr)(void*, int64_t);
 typedef int (*file_write_ptr)(void*, const uint8_t*, int32_t, int32_t*);
 typedef int (*file_get_size_ptr)(void*, int64_t*);
 
