@@ -186,7 +186,12 @@
       <AdditionalDependencies>libewf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln')">
+  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
+    <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\$(PlatformTarget)\</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\$(PlatformTarget)\BUILDER_DEPLOYED\</AdditionalLibraryDirectories>
     </Link>
