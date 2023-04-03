@@ -210,7 +210,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Release\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Release\$(PlatformTarget)\BUILDER_DEPLOYED\</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ConformanceMode>
