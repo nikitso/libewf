@@ -188,7 +188,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln')">
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\$(PlatformTarget)\BUILDER_DEPLOYED\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
