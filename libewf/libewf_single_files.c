@@ -3587,7 +3587,7 @@ int libewf_single_files_parse_utf8_string(
 		goto on_error;
 	}
 	if( ( line_string_size != 2 )
-	 || ( line_string[ 0 ] != (uint8_t) '5' ) )
+	 || ( line_string[ 0 ] > (uint8_t) '5' ) )
 	{
 		libcerror_error_set(
 		 error,
