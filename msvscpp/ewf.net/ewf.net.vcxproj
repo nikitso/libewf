@@ -83,6 +83,9 @@
     <OutDir>$(SolutionDir)$(PlatformTarget)\$(ProjectName)\$(Configuration)\net472\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\include;..\..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
