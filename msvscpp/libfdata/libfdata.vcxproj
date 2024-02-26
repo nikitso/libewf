@@ -72,6 +72,9 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\include;..\..\common;..\..\libcerror;..\..\libcthreads;..\..\libcdata;..\..\libcnotify;..\..\libfcache;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
