@@ -87,12 +87,14 @@
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='VSDebug|Win32'">
     <VcpkgInstalledDir>$(SolutionDir)..\..\.vcpkg_installed\$(ProjectName)\$(VcpkgTriplet)\</VcpkgInstalledDir>
+    <VcpkgConfiguration>Debug</VcpkgConfiguration>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgInstalledDir>$(SolutionDir)..\..\.vcpkg_installed\$(ProjectName)\$(VcpkgTriplet)\</VcpkgInstalledDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='VSDebug|x64'">
     <VcpkgInstalledDir>$(SolutionDir)..\..\.vcpkg_installed\$(ProjectName)\$(VcpkgTriplet)\</VcpkgInstalledDir>
+    <VcpkgConfiguration>Debug</VcpkgConfiguration>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
