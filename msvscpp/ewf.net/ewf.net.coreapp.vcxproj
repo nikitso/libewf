@@ -197,12 +197,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\LocalPackages\belkasoft.io\$(PlatformTarget)\Debug\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\$(PlatformTarget)\BUILDER_DEPLOYED\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\LocalPackages\belkasoft.io\$(PlatformTarget)\Release\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
@@ -218,7 +218,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Release\$(PlatformTarget)\BUILDER_DEPLOYED\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Release\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ConformanceMode>
