@@ -190,44 +190,17 @@
   <ItemGroup>
     <ResourceCompile Include="..\..\ewf.net\ewf.net.rc" />
   </ItemGroup>
-  <ItemDefinitionGroup>
-    <Link>
-      <AdditionalDependencies>libewf.lib</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
-    <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\LocalPackages\belkasoft.io\$(PlatformTarget)\Debug\</AdditionalLibraryDirectories>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
-    <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\LocalPackages\belkasoft.io\$(PlatformTarget)\Release\</AdditionalLibraryDirectories>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
-    <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Debug\$(PlatformTarget)\</AdditionalLibraryDirectories>
-    </Link>
-    <ClCompile>
-      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='VSDebug|Win32'">false</ConformanceMode>
-    </ClCompile>
-    <ClCompile>
-      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='VSDebug|x64'">false</ConformanceMode>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
-    <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)Release\$(PlatformTarget)\</AdditionalLibraryDirectories>
-    </Link>
-    <ClCompile>
-      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ConformanceMode>
-    </ClCompile>
-    <ClCompile>
-      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ConformanceMode>
-    </ClCompile>
-  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets" Condition="Exists('..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets'))" />
+  </Target>
 </Project>
