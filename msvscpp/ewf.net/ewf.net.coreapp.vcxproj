@@ -191,16 +191,11 @@
     <ResourceCompile Include="..\..\ewf.net\ewf.net.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\libewf\libewf.vcxproj">
+      <Project>{41c2387c-9d7f-42b9-9998-3430fbc95ae7}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets" Condition="Exists('..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\LibEWF.Native.1.0.4\build\native\libewf.native.targets'))" />
-  </Target>
 </Project>

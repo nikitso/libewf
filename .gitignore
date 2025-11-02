@@ -232,3 +232,4 @@ bld/
 /tests/input
 /tests/tmp*
 msvscpp/packages/
+msvscpp/.vcpkg_installed/
