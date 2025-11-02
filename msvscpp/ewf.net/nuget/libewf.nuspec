@@ -32,10 +32,10 @@
     <file src="..\..\x86\ewf.net.coreapp\Release\netcoreapp3.1\Ijwhost.dll" target="runtimes\win-x86\lib\netcoreapp3.1\ijwhost.dll" />
 
     <!-- Native dependencies -->
-    <file src="..\..\x86\ewf.net\Release\net472\libewf.dll" target="runtimes\win-x86\native\libewf.dll" />
-    <file src="..\..\x86\ewf.net\Release\net472\zlib1.dll" target="runtimes\win-x86\native\zlib1.dll" />
+    <file src="..\..\Release\x64\libewf.dll" target="runtimes\win-x64\native\libewf.dll" />
+    <file src="..\..\Release\x64\zlib1.dll" target="runtimes\win-x64\native\zlib1.dll" />
 
-    <file src="..\..\x64\ewf.net\Release\net472\libewf.dll" target="runtimes\win-x64\native\libewf.dll" />
-    <file src="..\..\x64\ewf.net\Release\net472\zlib1.dll" target="runtimes\win-x64\native\zlib1.dll" />
+    <file src="..\..\Release\x86\libewf.dll" target="runtimes\win-x86\native\libewf.dll" />
+    <file src="..\..\Release\x86\zlib1.dll" target="runtimes\win-x86\native\Win32\zlib1.dll" />
   </files>
 </package>

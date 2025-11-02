@@ -32,10 +32,12 @@
     <file src="..\..\x86\ewf.net.coreapp\VSDebug\netcoreapp3.1\Ijwhost.dll" target="runtimes\win-x86\lib\netcoreapp3.1\ijwhost.dll" />
 
     <!-- Native dependencies -->
-    <file src="..\..\x86\ewf.net\VSDebug\net472\libewf.dll" target="runtimes\win-x86\native\libewf.dll" />
-    <file src="..\..\x86\ewf.net\VSDebug\net472\zlibd1.dll" target="runtimes\win-x86\native\zlibd1.dll" />
-    
-    <file src="..\..\x64\ewf.net\VSDebug\net472\libewf.dll" target="runtimes\win-x64\native\libewf.dll" />
-    <file src="..\..\x64\ewf.net\VSDebug\net472\zlibd1.dll" target="runtimes\win-x64\native\zlibd1.dll" />
+    <file src="..\..\Debug\x64\libewf.dll" target="runtimes\win-x64\native\libewf.dll" />
+    <file src="..\..\Debug\x64\libewf.pdb" target="runtimes\win-x64\native\libewf.pdb" />
+    <file src="..\..\Debug\x64\zlibd1.dll" target="runtimes\win-x64\native\zlibd1.dll" />
+
+    <file src="..\..\Debug\x86\libewf.dll" target="runtimes\win-x86\native\libewf.dll" />
+    <file src="..\..\Debug\x86\libewf.pdb" target="runtimes\win-x86\native\libewf.pdb" />
+    <file src="..\..\Debug\x86\zlibd1.dll" target="runtimes\win-x86\native\zlibd1.dll" />
   </files>
 </package>
