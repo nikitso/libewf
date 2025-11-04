@@ -15,6 +15,7 @@
   <files>
     <!-- Header files -->
     <file src="..\..\..\include\libewf.h" target="build\native\include\libewf.h" />
+    <file src="..\..\..\include\libewf\codepage.h" target="build\native\include\libewf\codepage.h" />
     <file src="..\..\..\include\libewf\definitions.h" target="build\native\include\libewf\definitions.h" />
     <file src="..\..\..\include\libewf\error.h" target="build\native\include\libewf\error.h" />
     <file src="..\..\..\include\libewf\extern.h" target="build\native\include\libewf\extern.h" />
