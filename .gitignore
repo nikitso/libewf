@@ -231,5 +231,3 @@ bld/
 /tests/ewf_test_write_io_handle
 /tests/input
 /tests/tmp*
-msvscpp/packages/
-msvscpp/.vcpkg_installed/

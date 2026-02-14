@@ -184,11 +184,43 @@
   <ItemGroup>
     <ResourceCompile Include="..\..\ewf.net\ewf.net.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\libewf\libewf.vcxproj">
-      <Project>{41c2387c-9d7f-42b9-9998-3430fbc95ae7}</Project>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>libewf.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
+    <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\LocalPackages\belkasoft.io\$(PlatformTarget)\Debug\</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="!Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
+    <Link>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\LocalPackages\belkasoft.io\$(PlatformTarget)\Release\</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'VSDebug'">
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)Debug\$(PlatformTarget)\</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='VSDebug|Win32'">false</ConformanceMode>
+    </ClCompile>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='VSDebug|x64'">false</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="Exists('$(SolutionDir)fs.sln') and '$(Configuration)' == 'Release'">
+    <Link>
+      <AdditionalLibraryDirectories>$(SolutionDir)Release\$(PlatformTarget)\</AdditionalLibraryDirectories>
+    </Link>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ConformanceMode>
+    </ClCompile>
+    <ClCompile>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ConformanceMode>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
